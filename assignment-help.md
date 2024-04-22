@@ -24,12 +24,14 @@
 **Finish coming up with ideas**
     
 *To be completed by 22/04*
+
     - [ ] Come up with list of ideas
     - [ ] Select one to use
 
 **Sketch some designs**
 
 *To be completed by 06/05*
+
     - [ ] Over engineer everything
     - [ ] Make at least 3 sketches for any idea that comes up
     - [ ] Select one that makes the most sense for each idea
