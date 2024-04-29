@@ -5,6 +5,13 @@
 - Does education improve health and wellbeing?
 - How does access to affordable housing correlate with crime rates and community stability within urban areas?
 - How does access to clean air and water impact public health outcomes and quality of life on a global scale 
+- How alchohol affects everything (education, poverty, etc)
+- Correlation between migration and crime rate
+- Happiness vs popluation density
+- Education vs GDP (whatever it is)
+- Education vs broadband / internet access 
+- Pensions vs Aging population
+- Comparing the composition of population (population per age level)
 
 ## A really good idea
 

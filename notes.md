@@ -63,3 +63,47 @@
 ### Website
 
 - 
+
+## Visualisation Examples
+
+### Interactive Design
+
+https://www.bloomberg.com/graphics/2016-who-marries-whom/
+
+- Displays what occupations marry what occupations
+- Example of **brushing**
+- Instead of searching through tabs, you just hover your mouse over everything
+
+https://archive.nytimes.com/www.nytimes.com/interactive/2012/02/13/us/politics/2013-budget-proposal-graphic.html?_r=0
+
+- Variables:
+    - Proposed spending
+    - % to cut / increase from 2012
+
+- Hue / Colour
+    - Colour shows amount of cut/increase from 2012
+    - Red = cut
+    - Green = Increase
+    - It is clear which is an increase and decrease because it isn't a rainbow because of **saturation**
+
+- Main Visualisation
+    - Circles shows amount of spending
+    - Hovering over them shows their actual values
+    - Arranged from increased spending, to biggest cuts
+
+- Second Visualisation (Types of spending)
+    - Splits up the mandatory and discretionary spneding
+    - Animation between the two
+
+- Third Visualisation (Changes)
+    - Shows changes to discretionary spending
+    - Showing more clearly where gains/loses are
+    - Outliers are more evident
+    - Organised by the industry - It is **not** labeled correctly 
+
+- Fourth Visualisation
+    - Categorises each spending category into industries
+    - Can compare spending between industries, and between categories in industries together
+    - Most useful
+
+
