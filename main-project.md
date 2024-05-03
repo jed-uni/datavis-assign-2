@@ -14,3 +14,9 @@
 ### 1. Global Map
 
 ![Global Map Visualisation](/imgs/global-map-visualisation.png)
+
+## Gathering and Modifying Data
+
+When migrating this into the final report, add more details about what actually happened for EACH file
+
+1. In order to make comprehending the dataset easier, we must firstly remove what we don't need. For the Alchohol Consumption dataset, all we really need to do is take the country, year, and amount. This was done using LibreOffice Calc (Open source version of Excel). There were quite a few columns that were empty, and some that we simply don't need. For example, I simply remove male/female data, and keep _total data as there is no real need to keep a separation of male and female in this case. The lalcohol dataset does not provide that distinction anyway, so it would be meaningless to include.
