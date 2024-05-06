@@ -64,6 +64,7 @@ cur.execute("create table unemployed(id int primary key auto_increment, ref_area
 cur.execute("create table alcohol_consumption(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1) not null, time_period year not null, obs_value decimal(16, 8), foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))");
 cur.execute("create table cancer(id int primary key auto_increment, ref_area_code varchar(12) not null, cancer_site_code char(8) not null, time_period year not null, cases_per_100000_persons decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(cancer_site_code) references cancer_site(code))")
 cur.execute("create table health_status(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1), time_period year not null, obs_value decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))");
+cur.execute("create table life_expectency(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1), time_period year not null, obs_value decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))");
 connection.commit()
 
 
@@ -197,6 +198,41 @@ with open(dataset_health_status, "r") as f:
             cur.execute("insert into health_status(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, None, time_period, obs_value))
         else:
             cur.execute("insert into health_status(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, obs_status_id, time_period, obs_value))
+
+        if floor(index % (line_c / 10)) == 0: 
+            percentage = index / line_c;
+            print(" - "+str(floor(percentage * 100))+"%")
+        index+=1;
+
+# --- LIFE EXPECTENCY ---
+
+with open(dataset_life_expectency, "r") as f:
+    lines = f.readlines()
+    line_c = len(lines)
+    index = 0
+
+    print("\nParsing "+str(line_c)+" records in LIFE EXPECTENCY dataset")
+    for row in lines:
+        if index == 0:
+            index += 1
+            continue
+
+        records = row.split(',')
+
+        ref_area_code = records[0]
+        ref_area_name = records[1]
+        time_period = records[4]
+        obs_value = records[5]
+        obs_status_id = records[6]
+        obs_status_name = records[7]
+
+
+        insert_ref_area_if_not_exists(cur, ref_area_code, ref_area_name)
+        if obs_status_id == "":
+            insert_obs_status_code(cur, obs_status_id, obs_status_name)
+            cur.execute("insert into life_expectency(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, None, time_period, obs_value))
+        else:
+            cur.execute("insert into life_expectency(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, obs_status_id, time_period, obs_value))
 
         if floor(index % (line_c / 10)) == 0: 
             percentage = index / line_c;
