@@ -94,6 +94,8 @@ with open(dataset_unemployed, "r") as f:
         insert_ref_area_if_not_exists(cur, ref_area_code, ref_area_name)
         insert_obs_status_code(cur, obs_status_id, obs_status_code)
 
+        cur.execute("insert into unemployed(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, obs_status_id, time_period, obs_value))
+
         if floor(index % (line_c / 10)) == 0: 
             percentage = index / line_c;
             print(" - "+str(floor(percentage * 100))+"%")
