@@ -41,7 +41,11 @@ except mariadb.Error as e:
 
 cur = connection.cursor()
 
-dataset_dir = input("Enter dataset location: ") 
+if len(sys.argv) < 2:
+    print("You must include a directory as an argument to this script")
+    sys.exit()
+
+dataset_dir = sys.argv[1]
 dataset_unemployed = path_join(dataset_dir, "unemployed.csv")
 dataset_alcohol_consumption = path_join(dataset_dir, "alcohol_consumption.csv")
 dataset_cancer = path_join(dataset_dir, "cancer.csv")
