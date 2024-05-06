@@ -186,7 +186,7 @@ with open(dataset_health_status, "r") as f:
         obs_status_name = records[5]
 
         insert_ref_area_if_not_exists(cur, ref_area_code, ref_area_name)
-        if obs_status_id != "":
+        if obs_status_id == "":
             insert_obs_status_code(cur, obs_status_id, obs_status_name)
             cur.execute("insert into health_status(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, None, time_period, obs_value))
         else:
