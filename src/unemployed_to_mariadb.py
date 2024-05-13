@@ -30,9 +30,8 @@ def insert_cancer_site_code(db_cursor: mariadb.Cursor, cancer_site_code, cancer_
 
 try:
     connection = mariadb.connect(
-            user="user",
-            password="password",
-            host="localhost",
+            user="jedsaxon",
+            host="mariadb-debian.local",
             port=3306,
             )
 except mariadb.Error as e:
