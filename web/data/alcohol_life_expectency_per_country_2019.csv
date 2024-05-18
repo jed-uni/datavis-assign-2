@@ -1,0 +1,11 @@
+id,ref_area_code,time_period,alcohol_consumption,life_expectency
+1,CZE,2019,11.9,79.3
+2,AUT,2019,11.6,82
+3,LVA,2019,11.6,75.7
+4,FRA,2019,11.4,83
+5,LTU,2019,11.1,76.5
+6,LUX,2019,11,82.7
+7,RUS,2019,10.8,73.2
+8,HUN,2019,10.7,76.5
+9,DEU,2019,10.6,81.3
+10,EST,2019,10.4,79

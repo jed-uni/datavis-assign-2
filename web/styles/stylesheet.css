@@ -1,0 +1,50 @@
+body
+{
+    max-width: 70rem;
+    margin: auto;
+}
+
+/* Makes all divs inside align from left to right */
+#alcohol-consumption-pc-countries
+{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#alcohol-consumption-pc-countries > div
+{
+    flex: 0 1 10rem
+}
+
+#tooltip
+{
+    position: absolute;
+    background-color: whitesmoke;
+    border: solid;
+    border-width: 0.1rem;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    min-width: 10rem;
+}
+
+#tooltip :first-child
+{
+    margin-top: 0 !important;
+    text-align: center;
+}
+
+#tooltip hr
+{
+    margin: 0 !important;
+    color: rgba(0, 0, 0, 0.3)
+}
+
+#tooltip :last-child
+{
+    margin-bottom: 0 !important;
+}
+
+img 
+{
+    max-width: 100%;
+}
