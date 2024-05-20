@@ -3,9 +3,6 @@ async function loadAverageAlcoholConsumptionChart()
 {
     const width = 1000;
     const height = 600;
-    const margin = 30;
-    const chartMargin = margin + 30; // This is for the X axis so it doesn't clip with the x axis labels
-    const padding = .05; 
     
     const section = d3.select("#avg-alcohol-consumption")
     section.append("h1").text("Average alcohol consumption in the world")
@@ -15,7 +12,7 @@ async function loadAverageAlcoholConsumptionChart()
         .attr("width", width)
         .attr("height", height)
 
-    const data = await d3.csv("../data/average-alcohol-consumption.csv", (d) =>     {
+    const data = await d3.csv("./data/average-alcohol-consumption.csv", (d) =>     {
         return {
             ref_area_code: d.ref_area_code,
             avg_obs_value: parseFloat(d.avg_obs_value) // FUUCK YOU JAVASCRIPT

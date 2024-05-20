@@ -21,7 +21,7 @@ async function life_expectency_top_10_alcohol()
     const orderByLEBtn = segment.insert("button")
         .text("Order by life expectency")
 
-    const data = await d3.csv("./../data/alcohol_life_expectency_per_country_2019.csv", (d) => {
+    const data = await d3.csv("data/alcohol_life_expectency_per_country_2019.csv", (d) => {
         return {
             id: d.id,
             ref_area_code: d.ref_area_code,
