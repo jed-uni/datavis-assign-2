@@ -4,8 +4,6 @@ async function loadAverageAlcoholConsumptionChart()
     const width = 1000;
     const height = 600;
     const margin = 30;
-    const chartMargin = margin + 30; // This is for the X axis so it doesn't clip with the x axis labels
-    const padding = .05; 
     
     const section = d3.select("#avg-alcohol-consumption")
     section.append("h1").text("Average alcohol consumption in the world")
@@ -49,7 +47,6 @@ async function loadAverageAlcoholConsumptionChart()
     // Creating the map and assigning colours
     const mapPathData = await d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
 
-    notFoundColour = prefersDarkTheme ? "#605f60" : "whitesmoke"
     svg.append("g")
         .selectAll("path")
         .data(mapPathData.features)
@@ -59,7 +56,7 @@ async function loadAverageAlcoholConsumptionChart()
             if (d.id in countryToDataRel) 
                 return colourScale(countryToDataRel[d.id])
             else
-                return notFoundColour;
+                return "whitesmoke";
         })
         .on("mouseover", (event, d) => {
             let html;

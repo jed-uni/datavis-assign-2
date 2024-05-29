@@ -1,17 +1,18 @@
 body
 {
-    max-width: 70rem;
+    max-width: 100rem;
     margin: auto;
 }
 
 /* Makes all divs inside align from left to right */
-#alcohol-consumption-pc-countries
+.organised-list
 {
     display: flex;
     flex-wrap: wrap;
 }
 
-#alcohol-consumption-pc-countries > div
+
+.organised-list > div
 {
     flex: 0 1 10rem
 }
@@ -47,4 +48,26 @@ body
 img 
 {
     max-width: 100%;
+}
+
+#life-expectency-and-alcohol-consumption {
+    display: flex;
+}
+
+#life-expectency-and-alcohol-consumption section {
+    /* Add scroll bar */
+    max-height: 500px;
+    overflow-y: scroll;
+
+    /* Make the section move to left of SVG */
+    width: 15rem;
+    flex-direction: column;
+    float: left;
+
+    /* Add some styling to it */
+    background-color: whitesmoke;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    border: 0.15rem solid lightgray;
+    border-radius: 1rem;
 }
