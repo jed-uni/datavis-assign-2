@@ -52,18 +52,18 @@ dataset_health_status = path_join(dataset_dir, "health_status.csv")
 dataset_life_expectency = path_join(dataset_dir, "life_expectency.csv")
 
 connection.autocommit = False
-cur.execute("drop database if exists datavis")
-cur.execute("create database datavis");
-cur.execute("use datavis");
+cur.execute("drop database if exists cos30045")
+cur.execute("create database cos30045")
+cur.execute("use cos30045")
 
 cur.execute("create table cancer_site(code char(8) primary key, full_name varchar(100))")
 cur.execute("create table reference_area(code varchar(12) primary key, name varchar(100) not null)")
 cur.execute("create table obs_status(id char(1) primary key, name varchar(100) not null)")
-cur.execute("create table unemployed(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1) not null, time_period date not null, obs_value decimal(16, 8), foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))");
-cur.execute("create table alcohol_consumption(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1) not null, time_period year not null, obs_value decimal(16, 8), foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))");
+cur.execute("create table unemployed(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1) not null, time_period date not null, obs_value decimal(16, 8), foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))")
+cur.execute("create table alcohol_consumption(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1) not null, time_period year not null, obs_value decimal(16, 8), foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))")
 cur.execute("create table cancer(id int primary key auto_increment, ref_area_code varchar(12) not null, cancer_site_code char(8) not null, time_period year not null, cases_per_100000_persons decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(cancer_site_code) references cancer_site(code))")
-cur.execute("create table health_status(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1), time_period year not null, obs_value decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))");
-cur.execute("create table life_expectency(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1), time_period year not null, obs_value decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))");
+cur.execute("create table health_status(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1), time_period year not null, obs_value decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))")
+cur.execute("create table life_expectency(id int primary key auto_increment, ref_area_code varchar(12) not null, obs_status_id char(1), time_period year not null, obs_value decimal(16, 8) not null, foreign key(ref_area_code) references reference_area(code), foreign key(obs_status_id) references obs_status(id))")
 connection.commit()
 
 
@@ -71,13 +71,13 @@ connection.commit()
 with open(dataset_unemployed, "r") as f:
     lines = f.readlines()
     line_c = len(lines)
-    index = 0;
+    index = 0
 
     print("Parsing "+str(line_c)+" records in unemployed dataset")
     for row in lines:
         if index == 0:
             index += 1
-            continue;
+            continue
 
         # Disculde empty rows
         if row.strip() == '':
@@ -101,9 +101,9 @@ with open(dataset_unemployed, "r") as f:
         cur.execute("insert into unemployed(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, obs_status_id, time_period, obs_value))
 
         if floor(index % (line_c / 10)) == 0: 
-            percentage = index / line_c;
+            percentage = index / line_c
             print(" - "+str(floor(percentage * 100))+"%")
-        index+=1;
+        index+=1
     print(" - 100%")
 
 # --- ALCOHOL CONSUMPTION DATASET ---
@@ -134,9 +134,9 @@ with open(dataset_alcohol_consumption, "r") as f:
         cur.execute("insert into alcohol_consumption(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, obs_status_id, time_period, str(obs_value)))
 
         if floor(index % (line_c / 10)) == 0: 
-            percentage = index / line_c;
+            percentage = index / line_c
             print(" - "+str(floor(percentage * 100))+"%")
-        index+=1;
+        index+=1
 
 # --- CANCER DATASET ---
 with open(dataset_cancer, "r") as f:
@@ -163,12 +163,12 @@ with open(dataset_cancer, "r") as f:
 
         insert_ref_area_if_not_exists(cur, ref_area_code, ref_area_name)
         insert_cancer_site_code(cur, cancer_site_code, cancer_site_name)
-        cur.execute("insert into cancer(ref_area_code, cancer_site_code, time_period, cases_per_100000_persons) values(?, ?, ?, ?)", (ref_area_code, cancer_site_code, int(time_period), cases));
+        cur.execute("insert into cancer(ref_area_code, cancer_site_code, time_period, cases_per_100000_persons) values(?, ?, ?, ?)", (ref_area_code, cancer_site_code, int(time_period), cases))
 
         if floor(index % (line_c / 10)) == 0: 
-            percentage = index / line_c;
+            percentage = index / line_c
             print(" - "+str(floor(percentage * 100))+"%")
-        index+=1;
+        index+=1
 
 # --- HEALTH STATUS ---
 
@@ -199,9 +199,9 @@ with open(dataset_health_status, "r") as f:
             cur.execute("insert into health_status(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, obs_status_id, time_period, obs_value))
 
         if floor(index % (line_c / 10)) == 0: 
-            percentage = index / line_c;
+            percentage = index / line_c
             print(" - "+str(floor(percentage * 100))+"%")
-        index+=1;
+        index+=1
 
 # --- LIFE EXPECTENCY ---
 
@@ -234,9 +234,9 @@ with open(dataset_life_expectency, "r") as f:
             cur.execute("insert into life_expectency(ref_area_code, obs_status_id, time_period, obs_value) values(?, ?, ?, ?)", (ref_area_code, obs_status_id, time_period, obs_value))
 
         if floor(index % (line_c / 10)) == 0: 
-            percentage = index / line_c;
+            percentage = index / line_c
             print(" - "+str(floor(percentage * 100))+"%")
-        index+=1;
+        index+=1
 
 connection.commit()
 

@@ -49,6 +49,7 @@ async function loadAverageAlcoholConsumptionChart()
     // Creating the map and assigning colours
     const mapPathData = await d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
 
+    notFoundColour = prefersDarkTheme ? "#605f60" : "whitesmoke"
     svg.append("g")
         .selectAll("path")
         .data(mapPathData.features)
@@ -58,7 +59,7 @@ async function loadAverageAlcoholConsumptionChart()
             if (d.id in countryToDataRel) 
                 return colourScale(countryToDataRel[d.id])
             else
-                return "whitesmoke";
+                return notFoundColour;
         })
         .on("mouseover", (event, d) => {
             let html;

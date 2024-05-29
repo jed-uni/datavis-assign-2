@@ -3,6 +3,7 @@
 <head>
 	<title>Visualisations</title>
     <link href="styles/stylesheet.css" rel="stylesheet">
+    <link href="styles/darktheme.css" rel="stylesheet">
 	<script src="d3.js"></script>
 <head>
 <body>
@@ -40,6 +41,8 @@
     <script src="./js/life_expectency_top_10_alcohol.js"></script>
 
 	<script>
+        const prefersDarkTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        console.log(prefersDarkTheme)
         alcoholConsumptionOverTime().then();
 		loadAverageAlcoholConsumptionChart().then();
         life_expectency_top_10_alcohol().then();
