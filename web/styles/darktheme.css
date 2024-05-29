@@ -1,0 +1,12 @@
+@media (prefers-color-scheme: dark) {
+    html {
+        background-color: #2d2d2d !important;
+        color: whitesmoke !important;
+    }
+
+    #tooltip {
+        background-color: #605f60 !important;
+        border-color: #474547 !important;
+    }
+   
+}
