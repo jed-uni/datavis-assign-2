@@ -35,7 +35,7 @@ async function alcoholConsumptionOverTime()
 
     // For each country, create a checkbox
     countryCheckboxes = section.append("div")
-        .attr("id", "alcohol-consumption-pc-countries")
+        .attr("class", "organised-list")
         .selectAll("div")
         .data(groupedDataset, (e) => e[0])
         .enter()

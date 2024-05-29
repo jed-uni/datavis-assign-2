@@ -30,7 +30,6 @@ async function life_expectency_top_10_alcohol()
             life_expectency: parseFloat(d.life_expectency)
         }
     })
-    console.log(data)
 
     // let min = d3.min(data, (d) => d.alcohol_consumption)
     const max = d3.max(data, (d) => d.alcohol_consumption)

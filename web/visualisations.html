@@ -3,7 +3,6 @@
 <head>
 	<title>Visualisations</title>
     <link href="styles/stylesheet.css" rel="stylesheet">
-    <link href="styles/darktheme.css" rel="stylesheet">
 	<script src="d3.js"></script>
 <head>
 <body>
@@ -36,16 +35,18 @@
 
     <section id="life-expectency-top-10-alcohol"></section>
 
+    <section id="life-expectency-and-alcohol-consumption"></section>
+
 	<script src="./js/alcohol-consumption-pc.js"></script>
 	<script src="./js/average-alcohol-consumption.js"></script>
     <script src="./js/life_expectency_top_10_alcohol.js"></script>
+    <script src="./js/le_ac_chart.js"></script>
 
 	<script>
-        const prefersDarkTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        console.log(prefersDarkTheme)
         alcoholConsumptionOverTime().then();
 		loadAverageAlcoholConsumptionChart().then();
         life_expectency_top_10_alcohol().then();
+        loadLeAcChart().then();
 	</script>
 </body>
 </html>
