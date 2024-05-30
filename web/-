@@ -10,6 +10,7 @@ async function loadLeAcChart()
     const countriesSection = section.append("section")
     countriesSection.append("h1").text("Countries")
     const countriesRadioBtnList = countriesSection.append("div")
+        // .attr("class", "")
 
     const svg = section.append("svg").attr("width", width).attr("height", height)
 
@@ -21,13 +22,13 @@ async function loadLeAcChart()
     const data = await d3.csv("../data/le_and_ac.csv", (d) => {
         return {
             "id": ++index,
-            "timePeriod": new Date(d.time_period, 0, 0),
+            "timePeriod": new Date(d.time_period, 1, 1),
             "refAreaName": d.name,
             "refAreaCode": d.code,
-            "alcoholConsumption": d.alcohol_consumption == "" ? null : parseFloat(d.alcohol_consumption),
+            "alcoholConsumption": parseFloat(d.alcohol_consumption),
             "acIsEstimated": false,
             "lifeExpectency": d.life_expectency == "" ? null : parseFloat(d.life_expectency),
-            "lifeExpIsEstimated": false // We'll calculate this value elsewhere
+            "lifeExpIsEstimated": d.life_expectency == "" // We'll calculate this value elsewhere
         }
     })
 
@@ -40,9 +41,8 @@ async function loadLeAcChart()
 
     // Group the data and automatically select "AUS" for first selection
     const groupedData = d3.group(data, (d) => d.refAreaCode)
-    let selectedCountry = groupedData.get("RUS")
-    fillMissingData(selectedCountry, "lifeExpectency", "leIsEstimated")
-    fillMissingData(selectedCountry, "alcoholConsumption", "acIsEstimated")
+    let selectedCountry = groupedData.get("NZL")
+    fillMissingData(selectedCountry)
 
     // Get the scales for each axis
     const xAxisScale = getXAxisScale(width, margin, data)
@@ -102,7 +102,6 @@ async function loadLeAcChart()
         .datum(selectedCountry)
         .attr("class", "line")
         .attr("fill", "rgba(255, 0, 0, 0.3)")
-        .attr("stroke", "red")
         .attr("stroke-width", 1.5)
         .attr("z-index", 2)
         .attr("d", alcoholConsumptionLine(selectedCountry))
@@ -110,89 +109,59 @@ async function loadLeAcChart()
     pathContainer.append("path")
         .datum(selectedCountry)
         .attr("class", "line")
-        .attr("stroke", "blue")
         .attr("fill", "rgba(0, 0, 255, 0.3)")
         .attr("stroke-width", 1.5)
         .attr("z-index", 1)
         .attr("d", lifeExpectencyLine(selectedCountry))
 
-    const tooltip = d3.select("#tooltip") // I know, bad idea, but this is created in another function... ugly, right?
+    const toolitp = d3.select("#tooltip") // I know, bad idea, but this is created in another function... ugly, right?
 
-    // let barWidth = x(new Date(data[1].date)) - x(new Date(data[0].date));
-    const barWidth = xAxisScale(selectedCountry[1].timePeriod) - xAxisScale(selectedCountry[0].timePeriod)
-    const xAxisTooltip = svg.append("rect")
+    const xAxisTooltip = svg.append("line")
         .attr("class", "x")
-        .style("fill", "rgba(0, 0, 0, 0.2)")
-        .style("width", barWidth)
-        .style("height", height - margin - margin)
-        .style("x", "0")
-        .style("y", margin) // Will always be 0 or margin
+        .style("stroke", "steelblue")
+        .style("stroke-dasharray", "3,3")
+        .attr("y1", 0)
+        .attr("y2", height)
     const yAxisTooltip_alcoholConsumption = svg.append("line")
         .attr("class", "y")
-        .style("stroke", "gray")
-        .style("stroke-width", "3px")
-        .attr("x1", margin)
-        .attr("x2", width - margin)
-        .attr("transform", "translate(0, 0)")
+        .style("stroke", "steelblue")
+        .style("stroke-dasharray", "3,3")
+        .attr("y1", 0)
+        .attr("y2", height)
     const yAxisTooltip_lifeExpectency = svg.append("line")
         .attr("class", "y")
-        .style("stroke", "gray")
-        .style("stroke-width", "3px")
-        .attr("x1", margin)
-        .attr("x2", width - margin)
+        .style("stroke", "steelblue")
+        .style("stroke-dasharray", "3,3")
+        .attr("y1", 0)
+        .attr("y2", height)
 
     svg.on("mouseover", () => {
-        tooltip.style("visibility", "visible")
-        xAxisTooltip.style("visibility", "visible")
-        yAxisTooltip_alcoholConsumption.style("visibility", "visible")
-        yAxisTooltip_lifeExpectency.style("visibility", "visible")
+        const [x, y] = d3.pointer(event)
     })
-    let currentlySelectedYear = null
     svg.on("mousemove", () => {
         const [x, y] = d3.pointer(event)
         const year = xAxisScale.invert(x).getFullYear()
         const dataPoint = getDataPointFromYear(selectedCountry, year)
         if (dataPoint == null) {
             // hide tooltip
-            hideTooltip(tooltip)
-            return
+            hideTooltip()
         }
-        const dateBefore = new Date(year, 0, 0) // WHY
 
-        const xPos = xAxisScale(dateBefore)
+        const xPos = xAxisScale(year) // Re-invert it so we get the exact one for the year, not just where the mouse is
         const yPos1 = yAxisScale_alcoholConsumption(dataPoint.alcoholConsumption)
         const yPos2 = yAxisScale_lifeExpectency(dataPoint.lifeExpectency)
 
-        tooltip
-            .style("top", `${event.pageY - 40}px`)
-            .style("left", `${event.pageX + 40}px`)
-            .html(`
-                <p><strong>${dataPoint.refAreaName} - ${year}</strong></p>
-                <hr>
-                <p>Alcohol Consumption: ${dataPoint.acIsEstimated ? "~" : ""}${dataPoint.alcoholConsumption.toFixed(3)}</p>
-                <p>Life Expectency: ${dataPoint.leIsEstimated ? "~" : ""}${dataPoint.lifeExpectency.toFixed(3)}</p>
-            `)
-        if (currentlySelectedYear != year) {
-            currentlySelectedYear = year
-            xAxisTooltip
-                .attr("transform", `translate(${xPos}, 0)`)
-            yAxisTooltip_alcoholConsumption
-                .attr("transform", `translate(0, ${yPos1})`)
-            yAxisTooltip_lifeExpectency
-                .attr("transform", `translate(0, ${yPos2})`)
-        }
+        xAxisTooltip.attr("transform", `translate(${xPos}, ${height / 2})`)
+        yAxisScale_alcoholConsumption.attr("transform", `translate(${width / 2}, ${yPos1})`)
+        yAxisScale_lifeExpectency.attr("transform", `translate(${width / 2}, ${yPos2})`)
     })
     svg.on("mouseout", () => {
-        hideTooltip(tooltip)
-        xAxisTooltip.style("visibility", "hidden")
-        yAxisTooltip_alcoholConsumption.style("visibility", "hidden")
-        yAxisTooltip_lifeExpectency.style("visibility", "hidden")
+        hideTooltip()
     })
 }
 
 function hideTooltip(tooltip) {
-    tooltip.style("visibility", "hidden")
-}   
+}
 
 function getDataPointFromYear(data, year) {
     for (let i = 0; i < data.length; i++) {
@@ -229,11 +198,9 @@ function getYAxisScale_AlcoholConsumption(height, margin) {
 /** 
  * Fills null data by calculating trendline of existing data, and using extrapolated data to fill it in
  * @param {Array} data
- * @param {string} The index of the y axis to calculate the extrapolated values for
- * @param {string} An optional string that when set to something, will acces data[i]["isEstimated"] and flip to true if it was
- *  modified during the function
  */
-function fillMissingData(data, yAxisParameter, isEstimatedParameter) { // Formula from: https://math.stackexchange.com/a/204021
+function fillMissingData(data) {
+    // Formula from: https://math.stackexchange.com/a/204021
     
     // KEY TERIMNOLOGY:
     // [null, null, *6*, 8, 3, **9**, null, null ]
@@ -251,14 +218,14 @@ function fillMissingData(data, yAxisParameter, isEstimatedParameter) { // Formul
     for (let i = 0; i < data.length; i++) {
         if (leftMostIndex == -1) {
             // We have not found the left most index, meaning we should loop until we find it
-            if (data[i][yAxisParameter] != null) 
+            if (data[i].lifeExpectency != null) 
                 leftMostIndex = i
         } else {
             // We have found it, so we'll need to find the right most index
             // Loop until the next number is either a stack overflow, or null
             if (i == data.length - 1)
                 rightMostIndex = data.length
-            else if (data[i + 1][yAxisParameter] == null)
+            else if (data[i + 1].lifeExpectency == null)
                 rightMostIndex = i
             
             if (rightMostIndex != -1) break // We found one. Nicer than having 'break' in each 'if elseif' statement imo
@@ -269,41 +236,36 @@ function fillMissingData(data, yAxisParameter, isEstimatedParameter) { // Formul
     // rightMostIndex + 1 seems like something that should not be done 
     // (Could cause a stack overflow exception)
     const dataSubset = data.slice(leftMostIndex, rightMostIndex + 1)
-    const dataRise = calculateSlopeOfDataset(dataSubset, (d) => d[yAxisParameter])
+    const dataRise = calculateSlopeOfDataset(dataSubset)
 
     // This loop starts the left most value, and loops unitl the index = 0. Since we want to calculate the extrapolated value using
     // the linear equation we created, we can keep a store of the current X and Y, then for each index, subtract rise and run and set
     // that data point's life expectency to it
 
-    if (leftMostIndex != 0) {
-        let d = data[leftMostIndex]
-        let currentY = d[yAxisParameter]
-        for (let i = leftMostIndex - 1; i >= 0; i--) {
-            // We are going backward, so subtract
-            currentY -= dataRise
-            data[i][isEstimatedParameter] = true
-            data[i][yAxisParameter] = currentY
-        }
+    let d = data[leftMostIndex]
+    let currentY = d.lifeExpectency
+    for (let i = leftMostIndex - 1; i >= 0; i--) {
+        // We are going backward, so subtract
+        currentY -= dataRise
+        data[i].lifeExpectency = currentY
     }
 
-
-    if (rightMostIndex < data.length) {
-        d = data[rightMostIndex]
-        currentY = d[yAxisParameter]
-        for (let i = rightMostIndex + 1; i < data.length; i++) {
-            currentY += dataRise
-            data[i][isEstimatedParameter] = true
-            data[i][yAxisParameter] = currentY
-        }
+    d = data[rightMostIndex]
+    currentY = d.lifeExpectency
+    for (let i = rightMostIndex + 1; i < data.length; i++) {
+        currentY += dataRise
+        data[i].lifeExpectency = currentY
     }
+
+    console.log(`Calculating: left most = ${leftMostIndex}, right most = ${rightMostIndex}`)
+    console.table(data)
 }
 
 /**
  * Calculates the slope of Y in a dataset. Formula from - https://math.stackexchange.com/a/204021
  * @param {Array} data The sliced dataset, containing NO null/NaN values
- * @param {Function} A function that takes each data point as an argument, to return which value to use. Null to just use that value
  */
-function calculateSlopeOfDataset(data, func) {
+function calculateSlopeOfDataset(data) {
     let sumOfX = 0
     let sumOfXSquared = 0
     let sumOfY = 0
@@ -312,10 +274,10 @@ function calculateSlopeOfDataset(data, func) {
     for (let i = 0; i < n; i++) {
         const d = data[i]
         const x = d.timePeriod.getFullYear()
-        const y = func(d) ?? d
+        const y = d.lifeExpectency
 
         sumOfX += x
-        sumOfXSquared += x * x
+        sumOfXSquared += 2 * x
         sumOfY += y
         sumOfXMultY += x * y
     }

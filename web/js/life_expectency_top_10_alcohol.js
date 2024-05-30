@@ -87,8 +87,6 @@ async function life_expectency_top_10_alcohol()
         const orderedData = [...data]
             .sort((x, y) => d3.descending(x[orderByValue], y[orderByValue]))
 
-        console.log(orderedData)
-    
         const joinedData = svg.selectAll("rect")
             .data(orderedData, (d) => d.id);
 

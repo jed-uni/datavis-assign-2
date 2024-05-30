@@ -71,3 +71,4 @@ async function loadAverageAlcoholConsumptionChart()
         .on("mousemove", () => tooltip.style("top", (event.pageY - 40)+"px").style("left", (event.pageX+30)+"px")) 
         .on("mouseleave", () => tooltip.style("visibility", "hidden"))
 }
+
