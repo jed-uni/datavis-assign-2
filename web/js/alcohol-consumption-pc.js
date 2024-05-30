@@ -6,7 +6,7 @@ async function alcoholConsumptionOverTime()
     const margin = 30;
 
     // Load the .csv file
-    const csv = await d3.csv("../data/alcohol_consumption_total.csv", (d) => { return { 
+    const csv = await d3.csv("./data/alcohol_consumption_total.csv", (d) => { return { 
         time_period: new Date(d.time_period, 0, 1), 
         obs_value: d.obs_value,
         ref_area_code: d.ref_area_code
