@@ -6,15 +6,16 @@ async function loadLeAcChart()
 
     // Create the initial document, with headers and shit
     const section = d3.select("#life-expectency-and-alcohol-consumption");
+    const sidebarDiv = section.append("div").attr("class", "scroll-bar")
 
-    const countriesSection = section.append("section")
+    const legendSection = sidebarDiv.append("section")
+    legendSection.append("h1").text("Legend")
+
+    const countriesSection = sidebarDiv.append("section")
     countriesSection.append("h1").text("Countries")
     const countriesRadioBtnList = countriesSection.append("div")
 
     const svg = section.append("svg").attr("width", width).attr("height", height)
-
-    const legendSection = section.append("section")
-    legendSection.append("h1").text("Legend")
 
     // Get the data
     index = 0;
@@ -49,6 +50,17 @@ async function loadLeAcChart()
     const yAxisScale_lifeExpectency = getYAxisScale_LifeExpectency(height, margin)
     const yAxisScale_alcoholConsumption = getYAxisScale_AlcoholConsumption(height, margin)
 
+    // Construct the area chart functions
+    const alcoholConsumptionLine = d3.area()
+        .x((d) => xAxisScale(d.timePeriod))
+        .y0(yAxisScale_alcoholConsumption(0))
+        .y1((d) => yAxisScale_alcoholConsumption(d.alcoholConsumption))
+
+    const lifeExpectencyLine = d3.area()
+        .x((d) => xAxisScale(d.timePeriod))
+        .y0(yAxisScale_lifeExpectency(60)) // This has to be set to 50 as it is the minimum value for this chart, otherwise it clips underneath the axis
+        .y1((d) => yAxisScale_lifeExpectency(d.lifeExpectency))
+
     // Insert all countries as radio buttons in the countriesSelection section
     const countriesRadioBtns = countriesRadioBtnList
         .selectAll("div")
@@ -56,13 +68,45 @@ async function loadLeAcChart()
         .enter()
         .append("div")
 
+    // Tell each radio button to update the chart with the selected country
     countriesRadioBtns 
         .append("input")
         .attr("type", "radio")
         .attr("id", (d) => `le-ac-checks-${d[0].toLowerCase()}`) // Gets the lower case country code
         .attr("name", "le-ac-btn-group")
         .on("click", (event, d) => {
+            const newCountryCode = d[0]
+            if (!newCountryCode in groupedData) {
+                console.warn(`Country code '${newCountryCode}' has no associated data. Skipping`)
+                return
+            }
+            selectedCountry = groupedData.get(newCountryCode)
+            fillMissingData(selectedCountry, "lifeExpectency", "leIsEstimated")
+            fillMissingData(selectedCountry, "alcoholConsumption", "acIsEstimated")
 
+        acPathContainer.selectAll("path")
+            .datum(selectedCountry)
+            .join()
+            .attr("class", "line")
+            .attr("fill", "rgba(255, 0, 0, 0.3)")
+            .attr("stroke", "red")
+            .attr("stroke-width", 1.5)
+            .transition()
+            .duration(400)
+            .ease(d3.easeExpOut)
+            .attr("d", alcoholConsumptionLine(selectedCountry))
+
+        lePathContainer.selectAll("path")
+            .datum(selectedCountry)
+            .join()
+            .attr("class", "line")
+            .attr("stroke", "blue")
+            .attr("fill", "rgba(0, 0, 255, 0.3)")
+            .attr("stroke-width", 1.5)
+            .transition()
+            .duration(400)
+            .ease(d3.easeExpOut)
+            .attr("d", lifeExpectencyLine(selectedCountry))
         })
 
     // I'm so sorry. "d" is a map of reference area codes to names, years, and alcohol consumption/life expectency. -
@@ -75,30 +119,34 @@ async function loadLeAcChart()
 
     // Append axis lines
     svg.append("g")
+        .attr("class", "grid")
         .attr("transform", `translate(0, ${height - margin})`)
-        .call(d3.axisBottom(xAxisScale))
+        .call(
+            d3.axisBottom(xAxisScale)
+                .tickSize(-height, 0, 0)
+        )
 
     svg.append("g")
+        .attr("class", "grid")
         .attr("transform", `translate(${margin}, 0)`)
-        .call(d3.axisLeft(yAxisScale_lifeExpectency))
+        .call(
+            d3.axisLeft(yAxisScale_lifeExpectency)
+                .ticks(20)
+        )
 
     svg.append("g")
+        .attr("class", "grid")
         .attr("transform", `translate(${width - margin - margin - margin}, 0)`)
-        .call(d3.axisRight(yAxisScale_alcoholConsumption))
+        .call(
+            d3.axisRight(yAxisScale_alcoholConsumption)
+                .ticks(20)
+                .tickSize(-width + 4 * margin, 0, 0)
+        )
 
-    const alcoholConsumptionLine = d3.area()
-        .x((d) => xAxisScale(d.timePeriod))
-        .y0(yAxisScale_alcoholConsumption(0))
-        .y1((d) => yAxisScale_alcoholConsumption(d.alcoholConsumption))
-
-    const lifeExpectencyLine = d3.area()
-        .x((d) => xAxisScale(d.timePeriod))
-        .y0(yAxisScale_lifeExpectency(60)) // This has to be set to 50 as it is the minimum value for this chart, otherwise it clips underneath the axis
-        .y1((d) => yAxisScale_lifeExpectency(d.lifeExpectency))
-
-    const pathContainer = svg.append("g")
-
-    pathContainer.append("path")
+    // These are the containers that will contain the path objects for their respective data points
+    const acPathContainer = svg.append("g")
+    const lePathContainer = svg.append("g")
+    acPathContainer.append("path")
         .datum(selectedCountry)
         .attr("class", "line")
         .attr("fill", "rgba(255, 0, 0, 0.3)")
@@ -107,7 +155,7 @@ async function loadLeAcChart()
         .attr("z-index", 2)
         .attr("d", alcoholConsumptionLine(selectedCountry))
 
-    pathContainer.append("path")
+    lePathContainer.append("path")
         .datum(selectedCountry)
         .attr("class", "line")
         .attr("stroke", "blue")
@@ -118,26 +166,38 @@ async function loadLeAcChart()
 
     const tooltip = d3.select("#tooltip") // I know, bad idea, but this is created in another function... ugly, right?
 
-    // let barWidth = x(new Date(data[1].date)) - x(new Date(data[0].date));
+    // Create Tooltips
+    // x axis tooltip will contain <rect>, with <line> on right side to clearly show which point is being highlighted
     const barWidth = xAxisScale(selectedCountry[1].timePeriod) - xAxisScale(selectedCountry[0].timePeriod)
-    const xAxisTooltip = svg.append("rect")
-        .attr("class", "x")
-        .style("fill", "rgba(0, 0, 0, 0.2)")
+    const xAxisTooltip = svg.append("g")
+        .style("x", 0)
+        .style("y", 0) // Will always be 0 or margin
+        
+    xAxisTooltip.append("rect")
+        .style("fill", "rgba(50, 50, 50, 0.2)")
         .style("width", barWidth)
-        .style("height", height - margin - margin)
-        .style("x", "0")
-        .style("y", margin) // Will always be 0 or margin
+        .style("height", height - margin)
+
+    xAxisTooltip.append("line") 
+        .style("fill", "none")
+        .style("stroke", "black")
+        .style("stroke-dasharray", "10, 2.5")
+        .style("stroke-width", "0.15rem")
+        .attr("y1", 0)
+        .attr("y2", height - margin)
+
     const yAxisTooltip_alcoholConsumption = svg.append("line")
-        .attr("class", "y")
-        .style("stroke", "gray")
-        .style("stroke-width", "3px")
+        .style("stroke", "black")
+        .style("stroke-dasharray", "10, 2.5")
+        .style("stroke-width", "0.15rem")
         .attr("x1", margin)
         .attr("x2", width - margin)
         .attr("transform", "translate(0, 0)")
     const yAxisTooltip_lifeExpectency = svg.append("line")
         .attr("class", "y")
-        .style("stroke", "gray")
-        .style("stroke-width", "3px")
+        .style("stroke", "black")
+        .style("stroke-dasharray", "10, 2.5")
+        .style("stroke-width", "0.15rem")
         .attr("x1", margin)
         .attr("x2", width - margin)
 
@@ -151,15 +211,11 @@ async function loadLeAcChart()
     svg.on("mousemove", () => {
         const [x, y] = d3.pointer(event)
         const year = xAxisScale.invert(x).getFullYear()
-        const dataPoint = getDataPointFromYear(selectedCountry, year)
-        if (dataPoint == null) {
-            // hide tooltip
-            hideTooltip(tooltip)
-            return
-        }
-        const dateBefore = new Date(year, 0, 0) // WHY
+        const dataPoint = getDataPointFromYear(selectedCountry, year - 1)
 
-        const xPos = xAxisScale(dateBefore)
+        if (dataPoint == null) return
+
+        const xPos = xAxisScale(new Date(year, 0, 0))
         const yPos1 = yAxisScale_alcoholConsumption(dataPoint.alcoholConsumption)
         const yPos2 = yAxisScale_lifeExpectency(dataPoint.lifeExpectency)
 
@@ -212,7 +268,7 @@ function getXAxisScale(width, margin, data) {
 
 function getYAxisScale_LifeExpectency(height, margin) {
     const min = 60
-    const max = 100
+    const max = 100 
     return d3.scaleLinear()
         .domain([min, max])
         .range([height - margin, margin])
@@ -220,7 +276,7 @@ function getYAxisScale_LifeExpectency(height, margin) {
 
 function getYAxisScale_AlcoholConsumption(height, margin) {
     const min = 0 // Minimum is ~0.1 in the database
-    const max = 19 // Max is 18 in the dataset
+    const max = 20 // Max is 18 in the dataset
     return d3.scaleLinear()
         .domain([min, max])
         .range([height - margin, margin])

@@ -1,24 +1,21 @@
-body
-{
+body {
     max-width: 100rem;
     margin: auto;
+    padding-bottom: 10rem;
 }
 
 /* Makes all divs inside align from left to right */
-.organised-list
-{
+.organised-list {
     display: flex;
     flex-wrap: wrap;
 }
 
 
-.organised-list > div
-{
+.organised-list > div {
     flex: 0 1 10rem
 }
 
-#tooltip
-{
+#tooltip {
     position: absolute;
     background-color: whitesmoke;
     border: solid;
@@ -28,25 +25,21 @@ body
     min-width: 10rem;
 }
 
-#tooltip :first-child
-{
+#tooltip :first-child {
     margin-top: 0 !important;
     text-align: center;
 }
 
-#tooltip hr
-{
+#tooltip hr {
     margin: 0 !important;
     color: rgba(0, 0, 0, 0.3)
 }
 
-#tooltip :last-child
-{
+#tooltip :last-child {
     margin-bottom: 0 !important;
 }
 
-img 
-{
+img {
     max-width: 100%;
 }
 
@@ -54,12 +47,13 @@ img
     display: flex;
 }
 
-#life-expectency-and-alcohol-consumption section {
-    /* Add scroll bar */
-    max-height: 500px;
+.scroll-bar {
     overflow-y: scroll;
+}
 
+#life-expectency-and-alcohol-consumption > div {
     /* Make the section move to left of SVG */
+    max-height: 500px;
     width: 15rem;
     flex-direction: column;
     float: left;
@@ -71,3 +65,15 @@ img
     border: 0.15rem solid lightgray;
     border-radius: 1rem;
 }
+
+.grid line{
+  stroke: rgba(0, 0, 0, 0.2);
+}
+
+.grid path{
+  stroke: rgba(0, 0, 0, 0.2);
+}
+
+/* .grid text{
+  fill: rgba(0, 0, 0, 0.2);
+} */
