@@ -15,7 +15,7 @@ async function loadAverageAlcoholConsumptionChart()
     const data = await d3.csv("./data/average-alcohol-consumption.csv", (d) =>     {
         return {
             ref_area_code: d.ref_area_code,
-            avg_obs_value: parseFloat(d.avg_obs_value) // FUUCK YOU JAVASCRIPT
+            avg_obs_value: parseFloat(d.avg_obs_value)
         }
     });
     const max = d3.max(data, (d) => Math.ceil(d.avg_obs_value))
@@ -36,6 +36,7 @@ async function loadAverageAlcoholConsumptionChart()
     const tooltip = d3.select("body")
         .append("div")
         .attr("id", "tooltip")
+        .style("visibility", "hidden")
         .html("<p>I am a tooltip</p>")
 
     // Data and colour scale
