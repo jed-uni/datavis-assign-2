@@ -1,3 +1,46 @@
+// After making this dataSwitchSection part, I realised something... something I should have done a very long time ago
+// All I'm doing here is making a line chart based on multiple variables...
+// Why do I have to do everything *twice*?
+// The two Y axis scales are both the same, the lines are the same, the only thing that differs is the variable
+// I could just pass through functions into something like a 'lineGenerator()' function, as such:
+//      `svg.append(lineGenerator(data, (d) => d.lifeExpectency))`
+
+function createLegend(parent) {
+    const legendSection = parent.append("section")
+    legendSection.append("h1").text("Legend")
+    legendSection.append("p").text("Red - Alcohol Consumption").style("color", "red")
+    legendSection.append("p").text("Blue - Life Expectency").style("color", "blue")
+    legendSection.append("p").html("<p><s>Strike</s> - Extrapolated Data</p>")
+}
+
+function createDataSwitches(parent) {
+    const dataSwitchSection = parent.append("section")
+    dataSwitchSection.append("h1").text("Data Selection")
+
+    const leSwitchDiv = parent.append("div")
+    const leSwitch = leSwitchDiv.append("input")
+        .attr("type", "checkbox")
+        .attr("id", "le-switch-input")
+        .attr("checked", "checked")
+
+    leSwitchDiv.append("label")
+        .attr("for", "le-switch-input")
+        .text("Enable Life Expectency")
+
+
+    const acSwitchDiv = parent.append("div")
+    const acSwitch = acSwitchDiv.append("input")
+        .attr("type", "checkbox")
+        .attr("id", "ac-switch-input")
+        .attr("checked", "checked")
+
+    acSwitchDiv.append("label")
+        .attr("for", "ac-switch-input")
+        .text("Enable Alcohol Consumption")
+
+    return [leSwitch, acSwitch]
+}
+
 async function loadLeAcChart() 
 {
     const width = 1000;
@@ -8,11 +51,10 @@ async function loadLeAcChart()
     const section = d3.select("#life-expectency-and-alcohol-consumption");
     const sidebarDiv = section.append("div").attr("class", "scroll-bar")
 
-    const legendSection = sidebarDiv.append("section")
-    legendSection.append("h1").text("Legend")
-    legendSection.append("p").text("Red - Alcohol Consumption").style("color", "red")
-    legendSection.append("p").text("Blue - Life Expectency").style("color", "blue")
-    legendSection.append("p").html("<p><s>Strike</s> - Extrapolated Data</p>")
+    createLegend(sidebarDiv)
+    const [leSwitch, acSwitch] = createDataSwitches(sidebarDiv)
+    let leSwitchEnabled = true
+    let acSwitchEnabled = true
 
     const countriesSection = sidebarDiv.append("section")
     countriesSection.append("h1").text("Countries")
@@ -64,6 +106,11 @@ async function loadLeAcChart()
         .y0(yAxisScale_lifeExpectency(60)) // This has to be set to 50 as it is the minimum value for this chart, otherwise it clips underneath the axis
         .y1((d) => yAxisScale_lifeExpectency(d.lifeExpectency))
 
+    const zeroedLine = d3.area()
+        .x((d) => xAxisScale(d.timePeriod))
+        .y0(yAxisScale_alcoholConsumption(0))
+        .y1(yAxisScale_alcoholConsumption(0))
+
     // Insert all countries as radio buttons in the countriesSelection section
     const countriesRadioBtns = countriesRadioBtnList
         .selectAll("div")
@@ -87,28 +134,81 @@ async function loadLeAcChart()
             fillMissingData(selectedCountry, "lifeExpectency", "leIsEstimated")
             fillMissingData(selectedCountry, "alcoholConsumption", "acIsEstimated")
 
-        acPathContainer.selectAll("path")
-            .datum(selectedCountry)
-            .join()
-            .attr("class", "line")
-            .attr("stroke", "red")
-            .attr("stroke-width", 1.5)
-            .transition()
-            .duration(400)
-            .ease(d3.easeExpOut)
-            .attr("d", alcoholConsumptionLine(selectedCountry))
-
-        lePathContainer.selectAll("path")
-            .datum(selectedCountry)
-            .join()
-            .attr("class", "line")
-            .attr("stroke", "blue")
-            .attr("stroke-width", 1.5)
-            .transition()
-            .duration(400)
-            .ease(d3.easeExpOut)
-            .attr("d", lifeExpectencyLine(selectedCountry))
+        if (acSwitchEnabled) 
+            acPathContainer.selectAll("path")
+                .datum(selectedCountry)
+                .join()
+                .attr("class", "line")
+                .attr("stroke", "red")
+                .attr("stroke-width", 1.5)
+                .transition()
+                .duration(400)
+                .ease(d3.easeExpOut)
+                .attr("d", alcoholConsumptionLine(selectedCountry))
+        if (leSwitchEnabled) 
+            lePathContainer.selectAll("path")
+                .datum(selectedCountry)
+                .join()
+                .attr("class", "line")
+                .attr("stroke", "blue")
+                .attr("stroke-width", 1.5)
+                .transition()
+                .duration(400)
+                .ease(d3.easeExpOut)
+                .attr("d", lifeExpectencyLine(selectedCountry))
         })
+
+    // Tell each checkbox to remove certain values when checked/unchecked
+    acSwitch.on("change", (event, d) => {
+        const checked = event.target.checked;
+        
+        if (checked) {
+            acSwitchEnabled = true
+            acPathContainer.selectAll("path")
+                .datum(selectedCountry)
+                .join()
+                .transition()
+                .duration(500)
+                .ease(d3.easeExpOut)
+                .attr("d", alcoholConsumptionLine(selectedCountry))
+        }
+        else
+        {
+            acSwitchEnabled = false
+            acPathContainer.selectAll("path")
+                .datum(selectedCountry)
+                .join()
+                .transition()
+                .duration(500)
+                .ease(d3.easeExpOut)
+                .attr("d", zeroedLine(selectedCountry))
+        }
+    })
+    leSwitch.on("change", (event, d) => {
+        const checked = event.target.checked;
+        
+        if (checked) {
+            leSwitchEnabled = true
+            lePathContainer.selectAll("path")
+                .datum(selectedCountry)
+                .join()
+                .transition()
+                .duration(500)
+                .ease(d3.easeExpOut)
+                .attr("d", lifeExpectencyLine(selectedCountry))
+        }
+        else
+        {
+            leSwitchEnabled = false
+            lePathContainer.selectAll("path")
+                .datum(selectedCountry)
+                .join()
+                .transition()
+                .duration(500)
+                .ease(d3.easeExpOut)
+                .attr("d", zeroedLine(selectedCountry))
+        }
+    })
 
     // I'm so sorry. "d" is a map of reference area codes to names, years, and alcohol consumption/life expectency. -
     // In order to get the full reference area name, we have to get d[1], which is the array of values, and
@@ -205,8 +305,10 @@ async function loadLeAcChart()
     svg.on("mouseover", () => {
         tooltip.style("visibility", "visible")
         xAxisTooltip.style("visibility", "visible")
-        yAxisTooltip_alcoholConsumption.style("visibility", "visible")
-        yAxisTooltip_lifeExpectency.style("visibility", "visible")
+        if (acSwitchEnabled)
+            yAxisTooltip_alcoholConsumption.style("visibility", "visible")
+        if (leSwitchEnabled)
+            yAxisTooltip_lifeExpectency.style("visibility", "visible")
     })
     let currentlySelectedYear = null
     svg.on("mousemove", () => {
@@ -244,10 +346,10 @@ async function loadLeAcChart()
             currentlySelectedYear = year
             xAxisTooltip
                 .attr("transform", `translate(${xPos}, 0)`)
-            yAxisTooltip_alcoholConsumption
-                .attr("transform", `translate(0, ${yPos1})`)
-            yAxisTooltip_lifeExpectency
-                .attr("transform", `translate(0, ${yPos2})`)
+            if (acSwitchEnabled)
+                yAxisTooltip_alcoholConsumption.attr("transform", `translate(0, ${yPos1})`)
+            if (leSwitchEnabled)
+                yAxisTooltip_lifeExpectency.attr("transform", `translate(0, ${yPos2})`)
         }
     })
     svg.on("mouseout", () => {
@@ -375,7 +477,7 @@ function calculateSlopeOfDataset(data, func) {
     let sumOfX = 0
     let sumOfXSquared = 0
     let sumOfY = 0
-    let sumOfXMultY = 0 // summation (x * y)
+    let sumOfXMultY = 0 // summtion (x * y)
     let n = data.length
     for (let i = 0; i < n; i++) {
         const d = data[i]
