@@ -6,52 +6,14 @@
 	<script src="d3.js"></script>
 <head>
 <body>
-	<h1>What causes higher alcohol consumption rates?</h1>
-    <p>Is it possible that there is more to it than just culture?</p>
-
-    <section id="alcohol-consumption-pc"></section>
+	<h1>Alcohol Consumption and Life Expectancy</h1>
     <section id="avg-alcohol-consumption"></section>
-
-    <section>
-    	<h1>What does this mean?</h1>
-        <p>For now, we can see that most countries are quite varied, but generally lie between the 6 and 10 litres per 100,000 people mark, with a few notable outliers. Bellow, a comparison of the two outliers, <em>Russia</em> (10.8 at 2019) and <em>Turkey</em> (1.3), and the median <em>New Zealand</em> (8.8)</p>
-    </section>
-
-	<section> 
-        <h1>Life expectency for countries with least, most, and middle most alcohol consumption</h1>
-        <p>
-            <span style="color: orange">Orange: New Zealand</span><br>
-            <span style="color: red">Red: Turkey</span><br>
-            <span style="color: yellowgreen">Yellow: Russian</span>
-        </p>
-        <img src="img/life_expectency.png">
-	</section>
-
-    <section>   
-        <h1>What does this mean?</h1>
-        <p>Despite the fact that Turkey has the lowest alcohol consumption rate, New Zealand still has 3 1/2 more years in life expectency than Russia in 2019. However, we do see that Russia has a significantly larger gap (~9 years) between New Zealand, or ~5 1/2 years behind Turkey.
-        <p>Perhaps it could be described that countries with significantly greater alcohol consumption than other countries has lower lifespans?</p>
-    </section>
-
-    <section id="life-expectency-top-10-alcohol"></section>
-
-<<<<<<< HEAD
     <section id="life-expectency-and-alcohol-consumption"></section>
 
-	<script src="./js/alcohol-consumption-pc.js"></script>
 	<script src="./js/average-alcohol-consumption.js"></script>
-    <script src="./js/life_expectency_top_10_alcohol.js"></script>
     <script src="./js/le_ac_chart.js"></script>
-=======
-	<script src="js/alcohol-consumption-pc.js"></script>
-	<script src="js/average-alcohol-consumption.js"></script>
-    <script src="js/life_expectency_top_10_alcohol.js"></script>
->>>>>>> ebadb021a4c39e54f4bb785b65c0f735c63d2df5
-
 	<script>
-        alcoholConsumptionOverTime().then();
 		loadAverageAlcoholConsumptionChart().then();
-        life_expectency_top_10_alcohol().then();
         loadLeAcChart().then();
 	</script>
     <br><br><br><br>

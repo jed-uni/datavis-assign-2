@@ -6,7 +6,7 @@ async function loadAverageAlcoholConsumptionChart()
     
     const section = d3.select("#avg-alcohol-consumption")
     section.append("h1").text("Average alcohol consumption in the world")
-    section.append("p").html("<strong>Editors note:</strong> can you add a slider here to move between different years? If you are willing to, you should get rid of the line chart above")
+    section.append("p").html("Alcohol consumption of everyone aged above 15 years old, measured in <em>litres per capita</em>. Hover over map for tooltip.")
 
     const svg = section.append("svg")
         .attr("width", width)
