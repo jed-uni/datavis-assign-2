@@ -10,6 +10,9 @@ async function loadLeAcChart()
 
     const legendSection = sidebarDiv.append("section")
     legendSection.append("h1").text("Legend")
+    legendSection.append("p").text("Red - Alcohol Consumption").style("color", "red")
+    legendSection.append("p").text("Blue - Life Expectency").style("color", "blue")
+    legendSection.append("p").html("<p><s>Strike</s> - Extrapolated Data</p>")
 
     const countriesSection = sidebarDiv.append("section")
     countriesSection.append("h1").text("Countries")
@@ -88,7 +91,6 @@ async function loadLeAcChart()
             .datum(selectedCountry)
             .join()
             .attr("class", "line")
-            .attr("fill", "rgba(255, 0, 0, 0.3)")
             .attr("stroke", "red")
             .attr("stroke-width", 1.5)
             .transition()
@@ -101,7 +103,6 @@ async function loadLeAcChart()
             .join()
             .attr("class", "line")
             .attr("stroke", "blue")
-            .attr("fill", "rgba(0, 0, 255, 0.3)")
             .attr("stroke-width", 1.5)
             .transition()
             .duration(400)
@@ -149,7 +150,7 @@ async function loadLeAcChart()
     acPathContainer.append("path")
         .datum(selectedCountry)
         .attr("class", "line")
-        .attr("fill", "rgba(255, 0, 0, 0.3)")
+        .attr("fill", "rgba(255, 0, 0, 0.1)")
         .attr("stroke", "red")
         .attr("stroke-width", 1.5)
         .attr("z-index", 2)
@@ -159,7 +160,7 @@ async function loadLeAcChart()
         .datum(selectedCountry)
         .attr("class", "line")
         .attr("stroke", "blue")
-        .attr("fill", "rgba(0, 0, 255, 0.3)")
+        .attr("fill", "rgba(0, 0, 255, 0.1)")
         .attr("stroke-width", 1.5)
         .attr("z-index", 1)
         .attr("d", lifeExpectencyLine(selectedCountry))
@@ -187,15 +188,15 @@ async function loadLeAcChart()
         .attr("y2", height - margin)
 
     const yAxisTooltip_alcoholConsumption = svg.append("line")
-        .style("stroke", "black")
+        .style("stroke", "red")
         .style("stroke-dasharray", "10, 2.5")
         .style("stroke-width", "0.15rem")
         .attr("x1", margin)
-        .attr("x2", width - margin)
+        .attr("x2", width - 3 * margin)
         .attr("transform", "translate(0, 0)")
     const yAxisTooltip_lifeExpectency = svg.append("line")
         .attr("class", "y")
-        .style("stroke", "black")
+        .style("stroke", "blue")
         .style("stroke-dasharray", "10, 2.5")
         .style("stroke-width", "0.15rem")
         .attr("x1", margin)
@@ -219,14 +220,25 @@ async function loadLeAcChart()
         const yPos1 = yAxisScale_alcoholConsumption(dataPoint.alcoholConsumption)
         const yPos2 = yAxisScale_lifeExpectency(dataPoint.lifeExpectency)
 
+        const acFixed = dataPoint.alcoholConsumption.toFixed(2)
+        const leFixed = dataPoint.lifeExpectency.toFixed(2)
+
+        const alcoholConsumptionHtml = dataPoint.acIsEstimated 
+            ? `<s>Alcohol Consumption: ~${acFixed}</s>`
+            : `Alcohol Consumption: ${leFixed}`
+
+        const lifeExpectencyHtml = dataPoint.leIsEstimated 
+            ? `<s>Life Expectency: ~${leFixed}</s>`
+            : `Life Expectency: ${leFixed}`
+
         tooltip
             .style("top", `${event.pageY - 40}px`)
             .style("left", `${event.pageX + 40}px`)
             .html(`
                 <p><strong>${dataPoint.refAreaName} - ${year}</strong></p>
                 <hr>
-                <p>Alcohol Consumption: ${dataPoint.acIsEstimated ? "~" : ""}${dataPoint.alcoholConsumption.toFixed(3)}</p>
-                <p>Life Expectency: ${dataPoint.leIsEstimated ? "~" : ""}${dataPoint.lifeExpectency.toFixed(3)}</p>
+                <p>${lifeExpectencyHtml}</p>
+                <p>${alcoholConsumptionHtml}</p>
             `)
         if (currentlySelectedYear != year) {
             currentlySelectedYear = year
