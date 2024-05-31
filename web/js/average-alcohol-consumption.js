@@ -92,7 +92,7 @@ async function loadAverageAlcoholConsumptionChart()
 
     // Creating the map and assigning colours
     const mapPathData = await d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-    const map = svg.append("g")
+    svg.append("g")
         .selectAll("path")
         .data(mapPathData.features)
         .join("path")
@@ -103,11 +103,7 @@ async function loadAverageAlcoholConsumptionChart()
         .attr("stroke-width", "0.5px")
         .on("mouseover", (event, d) => {
             updateTooltip(tooltip, countryToACMap, d)
-            svg.select(`#map-path-${d.id.toLowerCase()}`)
-                .transition()
-                .duration(100)
-                .attr("stroke", "black")
-                .attr("stroke-width", "2px")
+            hoverOverMap(svg, d.id)
         })
         .on("mousemove", (event, d) => {
 
@@ -115,12 +111,31 @@ async function loadAverageAlcoholConsumptionChart()
         })
         .on("mouseout", (event, d) => { 
             tooltip.style("visibility", "hidden")
-            svg.select(`#map-path-${d.id.toLowerCase()}`)
-                .transition()
-                .duration(100)
-                .attr("stroke", "black")
-                .attr("stroke-width", "0.5px")
+            hoverOverMap_finish(svg, d.id)
         })
+}
+
+/**
+ * Highlights the <path> attribute, with the id of "map-path-countryId" with black, and a stroke width of
+ * 2px
+ */
+function hoverOverMap(svg, countryId) {
+    svg.select(`#map-path-${countryId.toLowerCase()}`)
+        .transition()
+        .duration(100)
+        .attr("stroke", "black")
+        .attr("stroke-width", "2px")
+}
+
+/**
+ * Returns the <path> attribute with the id of "map-path-countryId" with black, and a stroke width of 0.5px
+ */
+function hoverOverMap_finish(svg, countryId) {
+    svg.select(`#map-path-${countryId.toLowerCase()}`)
+        .transition()
+        .duration(100)
+        .attr("stroke", "black")
+        .attr("stroke-width", "0.5px")
 }
 
 /**
