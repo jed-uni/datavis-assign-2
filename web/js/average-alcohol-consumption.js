@@ -1,4 +1,3 @@
-
 async function loadAverageAlcoholConsumptionChart()
 {
     const width = 1000;
