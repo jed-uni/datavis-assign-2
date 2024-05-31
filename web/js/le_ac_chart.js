@@ -5,42 +5,6 @@
 // I could just pass through functions into something like a 'lineGenerator()' function, as such:
 //      `svg.append(lineGenerator(data, (d) => d.lifeExpectency))`
 
-function createLegend(parent) {
-    const legendSection = parent.append("section")
-    legendSection.append("h1").text("Legend")
-    legendSection.append("p").text("Red - Alcohol Consumption").style("color", "red")
-    legendSection.append("p").text("Blue - Life Expectency").style("color", "blue")
-    legendSection.append("p").html("<p><s>Strike</s> - Extrapolated Data</p>")
-}
-
-function createDataSwitches(parent) {
-    const dataSwitchSection = parent.append("section")
-    dataSwitchSection.append("h1").text("Data Selection")
-
-    const leSwitchDiv = parent.append("div")
-    const leSwitch = leSwitchDiv.append("input")
-        .attr("type", "checkbox")
-        .attr("id", "le-switch-input")
-        .attr("checked", "checked")
-
-    leSwitchDiv.append("label")
-        .attr("for", "le-switch-input")
-        .text("Enable Life Expectency")
-
-
-    const acSwitchDiv = parent.append("div")
-    const acSwitch = acSwitchDiv.append("input")
-        .attr("type", "checkbox")
-        .attr("id", "ac-switch-input")
-        .attr("checked", "checked")
-
-    acSwitchDiv.append("label")
-        .attr("for", "ac-switch-input")
-        .text("Enable Alcohol Consumption")
-
-    return [leSwitch, acSwitch]
-}
-
 async function loadLeAcChart() 
 {
     const width = 1000;
@@ -171,9 +135,7 @@ async function loadLeAcChart()
                 .duration(500)
                 .ease(d3.easeExpOut)
                 .attr("d", alcoholConsumptionLine(selectedCountry))
-        }
-        else
-        {
+        } else {
             acSwitchEnabled = false
             acPathContainer.selectAll("path")
                 .datum(selectedCountry)
@@ -196,9 +158,7 @@ async function loadLeAcChart()
                 .duration(500)
                 .ease(d3.easeExpOut)
                 .attr("d", lifeExpectencyLine(selectedCountry))
-        }
-        else
-        {
+        } else {
             leSwitchEnabled = false
             lePathContainer.selectAll("path")
                 .datum(selectedCountry)
@@ -222,27 +182,17 @@ async function loadLeAcChart()
     svg.append("g")
         .attr("class", "grid")
         .attr("transform", `translate(0, ${height - margin})`)
-        .call(
-            d3.axisBottom(xAxisScale)
-                .tickSize(-height, 0, 0)
-        )
+        .call(d3.axisBottom(xAxisScale).tickSize(-height, 0, 0))
 
     svg.append("g")
         .attr("class", "grid")
         .attr("transform", `translate(${margin}, 0)`)
-        .call(
-            d3.axisLeft(yAxisScale_lifeExpectency)
-                .ticks(20)
-        )
+        .call(d3.axisLeft(yAxisScale_lifeExpectency).ticks(20))
 
     svg.append("g")
         .attr("class", "grid")
         .attr("transform", `translate(${width - margin - margin - margin}, 0)`)
-        .call(
-            d3.axisRight(yAxisScale_alcoholConsumption)
-                .ticks(20)
-                .tickSize(-width + 4 * margin, 0, 0)
-        )
+        .call(d3.axisRight(yAxisScale_alcoholConsumption).ticks(20).tickSize(-width + 4 * margin, 0, 0))
 
     // These are the containers that will contain the path objects for their respective data points
     const acPathContainer = svg.append("g")
@@ -333,8 +283,7 @@ async function loadLeAcChart()
             ? `<s>Life Expectency: ~${leFixed}</s>`
             : `Life Expectency: ${leFixed}`
 
-        tooltip
-            .style("top", `${event.pageY - 40}px`)
+        tooltip.style("top", `${event.pageY - 40}px`)
             .style("left", `${event.pageX + 40}px`)
             .html(`
                 <p><strong>${dataPoint.refAreaName} - ${year}</strong></p>
@@ -342,6 +291,7 @@ async function loadLeAcChart()
                 <p>${lifeExpectencyHtml}</p>
                 <p>${alcoholConsumptionHtml}</p>
             `)
+        // This makes it so we don't have to execute the same code every single frame the user moves their mouse
         if (currentlySelectedYear != year) {
             currentlySelectedYear = year
             xAxisTooltip
@@ -493,3 +443,40 @@ function calculateSlopeOfDataset(data, func) {
     // oh god oh fuck oh shit oh fuck
     return (n * sumOfXMultY - sumOfX * sumOfY) / (n * sumOfXSquared - (sumOfX * sumOfX))
 }
+
+function createLegend(parent) {
+    const legendSection = parent.append("section")
+    legendSection.append("h1").text("Legend")
+    legendSection.append("p").text("Red - Alcohol Consumption").style("color", "red")
+    legendSection.append("p").text("Blue - Life Expectency").style("color", "blue")
+    legendSection.append("p").html("<p><s>Strike</s> - Extrapolated Data</p>")
+}
+
+function createDataSwitches(parent) {
+    const dataSwitchSection = parent.append("section")
+    dataSwitchSection.append("h1").text("Data Selection")
+
+    const leSwitchDiv = parent.append("div")
+    const leSwitch = leSwitchDiv.append("input")
+        .attr("type", "checkbox")
+        .attr("id", "le-switch-input")
+        .attr("checked", "checked")
+
+    leSwitchDiv.append("label")
+        .attr("for", "le-switch-input")
+        .text("Enable Life Expectency")
+
+
+    const acSwitchDiv = parent.append("div")
+    const acSwitch = acSwitchDiv.append("input")
+        .attr("type", "checkbox")
+        .attr("id", "ac-switch-input")
+        .attr("checked", "checked")
+
+    acSwitchDiv.append("label")
+        .attr("for", "ac-switch-input")
+        .text("Enable Alcohol Consumption")
+
+    return [leSwitch, acSwitch]
+}
+
