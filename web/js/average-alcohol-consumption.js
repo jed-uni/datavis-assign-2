@@ -6,9 +6,10 @@ async function loadAverageAlcoholConsumptionChart()
     
     const section = d3.select("#avg-alcohol-consumption")
     section.append("h1").text("Average alcohol consumption in the world")
-    section.append("p").html("Alcohol consumption of everyone aged above 15 years old, measured in <em>litres per capita</em>. Hover over map for tooltip.")
+    section.append("p").html("Alcohol consumption of everyone aged above 15 years old, measured in <em>litres per capita</em>. Hover over map for exact value.")
 
     const svg = section.append("svg")
+        .attr("class", "map")
         .attr("width", width)
         .attr("height", height)
 
@@ -18,12 +19,14 @@ async function loadAverageAlcoholConsumptionChart()
             avg_obs_value: parseFloat(d.avg_obs_value)
         }
     });
+
     const max = d3.max(data, (d) => Math.ceil(d.avg_obs_value))
     const min = d3.min(data, (d) => Math.ceil(d.avg_obs_value))
 
-    let countryToDataRel = { }
+    // Get a map of country codes => alcohol consumption for better performance
+    let countryToACMap = { }
     for (let i = 0; i < data.length; i++) {
-        countryToDataRel[data[i].ref_area_code] = data[i].avg_obs_value;
+        countryToACMap[data[i].ref_area_code] = data[i].avg_obs_value;
     }
 
     // Stolen shamelessly from https://d3-graph-gallery.com/graph/choropleth_basic.html
@@ -42,33 +45,79 @@ async function loadAverageAlcoholConsumptionChart()
     // Data and colour scale
     const colourScale = d3.scaleLinear()
         .domain([min, max])
-        .range(["white", "purple"])
+        .range(["#f8d4f9", "purple"])
+
+    // Creating legend on top left of map
+    const legendGradientDef = svg.append("defs")
+    const legendGradient = legendGradientDef.append("linearGradient")
+        .attr("id", "map-gradient")
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("y1", 0)
+        .attr("y2", 1)
+
+    legendGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", colourScale(min))
+
+    legendGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", colourScale(max))
+
+    const legend = svg.append("g")
+        .attr("transform", "translate(10, 10)")
+
+    const legendGradientImpl = legend.append("rect")
+        .attr("width", 20)
+        .attr("height", 120)
+        .style("fill", "url(#map-gradient")  
+
+    legend.append("text")
+        .text("Least")
+        .attr("transform", "translate(25, 12.5)")
+    legend.append("text")
+        .text("Most")
+        .attr("transform", "translate(25, 120)")
 
     // Creating the map and assigning colours
     const mapPathData = await d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-
     svg.append("g")
         .selectAll("path")
         .data(mapPathData.features)
         .join("path")
         .attr("d", d3.geoPath().projection(projection))
-        .attr("fill", (d) => {
-            if (d.id in countryToDataRel) 
-                return colourScale(countryToDataRel[d.id])
-            else
-                return "whitesmoke";
-        })
+        .attr("fill", (d) => getMapColour(countryToACMap, d, colourScale))
         .on("mouseover", (event, d) => {
-            let html;
-            if(d.id in countryToDataRel)
-                html = `<p><strong>${d.id}</strong></p><hr><p>Alcohol Consumption: ${countryToDataRel[d.id].toFixed(3)}</p>`;
-            else 
-                html = `<p><strong>${d.id}</strong></p><hr><p>Alcohol Consumption: No Data</p>`;
-                    
-            tooltip.style("visibility", "visible").html(html)
-
+            updateTooltip(tooltip, countryToACMap, d)
         })
-        .on("mousemove", () => tooltip.style("top", (event.pageY - 40)+"px").style("left", (event.pageX+30)+"px")) 
-        .on("mouseleave", () => tooltip.style("visibility", "hidden"))
+        .on("mousemove", (event, d) => {
+            tooltip.style("top", (event.pageY - 40)+"px").style("left", (event.pageX+30)+"px")
+        })
+        .on("mouseleave", () => { 
+            tooltip.style("visibility", "hidden")
+        })
 }
 
+/**
+ * If d.id is inside of the dataset map, it will return the colour after being processed by the scale Otherwise
+ * it will simply return "whitesmoke"
+ */
+function getMapColour(dataset, d, scale) {
+    if (d.id in dataset) 
+        return scale(dataset[d.id])
+    else
+        return "whitesmoke";
+}
+
+/**
+ * Updates the tooltip based on what country is selected, d
+ */
+function updateTooltip(tooltip, dataset, selectedPoint) {
+    let html;
+    if(selectedPoint.id in dataset)
+        html = `<p><strong>${selectedPoint.id}</strong></p><hr><p>Alcohol Consumption: ${dataset[selectedPoint.id].toFixed(3)}</p>`;
+    else 
+        html = `<p><strong>${selectedPoint.id}</strong></p><hr><p>Alcohol Consumption: No Data</p>`;
+            
+    tooltip.style("visibility", "visible").html(html)
+}
