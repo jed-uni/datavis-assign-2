@@ -3,19 +3,18 @@
 <head>
 	<title>Visualisations</title>
     <link href="styles/stylesheet.css" rel="stylesheet">
-	<script src="d3.js"></script>
 <head>
 <body>
 	<h1>Alcohol Consumption and Life Expectancy</h1>
     <section id="avg-alcohol-consumption"></section>
     <section id="life-expectency-and-alcohol-consumption"></section>
 
+	<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 	<script src="./js/average-alcohol-consumption.js"></script>
     <script src="./js/le_ac_chart.js"></script>
 	<script>
 		loadAverageAlcoholConsumptionChart().then();
         loadLeAcChart().then();
 	</script>
-    <br><br><br><br>
 </body>
 </html>

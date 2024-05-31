@@ -64,7 +64,7 @@ async function loadLeAcChart()
 
     // Get the data
     index = 0;
-    const data = await d3.csv("../data/le_and_ac.csv", (d) => {
+    const data = await d3.csv("../assets/le_and_ac.csv", (d) => {
         return {
             "id": ++index,
             "timePeriod": new Date(d.time_period, 0, 0),
