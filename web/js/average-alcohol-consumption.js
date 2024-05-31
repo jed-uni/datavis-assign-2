@@ -92,20 +92,34 @@ async function loadAverageAlcoholConsumptionChart()
 
     // Creating the map and assigning colours
     const mapPathData = await d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-    svg.append("g")
+    const map = svg.append("g")
         .selectAll("path")
         .data(mapPathData.features)
         .join("path")
+        .attr("id", (d) => `map-path-${d.id.toLowerCase()}`)
         .attr("d", d3.geoPath().projection(projection))
         .attr("fill", (d) => getMapColour(countryToACMap, d, colourScale))
+        .attr("stroke", "black")
+        .attr("stroke-width", "0.5px")
         .on("mouseover", (event, d) => {
             updateTooltip(tooltip, countryToACMap, d)
+            svg.select(`#map-path-${d.id.toLowerCase()}`)
+                .transition()
+                .duration(100)
+                .attr("stroke", "black")
+                .attr("stroke-width", "2px")
         })
         .on("mousemove", (event, d) => {
+
             tooltip.style("top", (event.pageY - 40)+"px").style("left", (event.pageX+30)+"px")
         })
-        .on("mouseleave", () => { 
+        .on("mouseout", (event, d) => { 
             tooltip.style("visibility", "hidden")
+            svg.select(`#map-path-${d.id.toLowerCase()}`)
+                .transition()
+                .duration(100)
+                .attr("stroke", "black")
+                .attr("stroke-width", "0.5px")
         })
 }
 
