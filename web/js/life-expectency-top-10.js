@@ -49,7 +49,7 @@ async function loadLifeExpectencyAndAlcoholTop10()
     // Values directly from the database
     const colourScale = d3.scaleLinear()
         .domain([85, 72])
-        .range(["white", "red"])
+        .range(["white", "darkblue"])
 
     const xAxisLabels = svg.append("g")
         .attr("transform", `translate(0, ${height})`)
