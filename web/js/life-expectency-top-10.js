@@ -70,6 +70,41 @@ async function loadLifeExpectencyAndAlcoholTop10()
             .tickSize(-width, 0, 0)
         )
 
+    // Add legend
+    const legendGradientDef = svg.append("defs")
+    const legendGradient = legendGradientDef.append("linearGradient")
+        .attr("id", "bar-chart-gradient")
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("y1", 0)
+        .attr("y2", 1)
+
+    legendGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", colourScale(85))
+
+    legendGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", colourScale(72))
+
+    const legend = svg.append("g")
+        .attr("transform", `translate(${width + margin.right}, 10)`)
+
+    legend.append("rect")
+        .attr("stroke", "black")
+        .style("fill", "url(#bar-chart-gradient")  
+        .attr("width", 20)
+        .attr("height", 120)
+
+    legend.append("text")
+        .text(`72 Years`)
+        .attr("transform", "translate(-10, 12.5)")
+        .attr("text-anchor", "end")
+    legend.append("text")
+        .text(`Most: 85 Years`)
+        .attr("transform", "translate(-10, 120)")
+        .attr("text-anchor", "end")
+
     // Add actual x-axis labels (as in the actual label, not each indvidiual X/Y axis increment label)
     // https://stackoverflow.com/a/11194968
     svg.append("text")
@@ -141,7 +176,13 @@ async function loadLifeExpectencyAndAlcoholTop10()
 
         // i really need to sleep 
         const joinedData = svg.selectAll("rect")
-            .data(orderedData, (d) => d.id);
+            .data(orderedData, (d) => {
+                try {
+                    return d.id
+                } catch {
+                    console.log("Don't worry about it")
+                }
+            });
 
         scaleX.domain(orderedData.map(d => d.ref_area_code))
 
