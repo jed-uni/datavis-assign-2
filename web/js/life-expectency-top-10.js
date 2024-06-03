@@ -8,6 +8,13 @@ async function loadLifeExpectencyAndAlcoholTop10()
     const segment = d3.select("#life-expectency-top-10-alcohol")
     segment.insert("h1").text("Life expectency for the top 10 alcohol consumers in 2019")
 
+    const btnGroup = segment.insert("div")
+    const orderByACBtn = btnGroup.insert("button")
+        .text("Order by alcohol consumption")
+    const orderByLEBtn = btnGroup.insert("button")
+        .text("Order by life expectency")
+
+
     // append the svg object to the body of the page
     const svg = d3.select("#life-expectency-top-10-alcohol")
       .insert("svg")
@@ -15,11 +22,6 @@ async function loadLifeExpectencyAndAlcoholTop10()
         .attr("height", height + margin.top + margin.bottom)
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    const orderByACBtn = segment.insert("button")
-        .text("Order by alcohol consumption")
-    const orderByLEBtn = segment.insert("button")
-        .text("Order by life expectency")
 
     let index = 0
     const data = await d3.csv("assets/avg_le_ac_top_10.csv", (d) => {
