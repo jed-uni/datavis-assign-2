@@ -25,7 +25,8 @@ async function loadLifeExpectencyAndAlcoholTop10()
       .insert("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+    
+    const svgContainer = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     let index = 0
@@ -58,15 +59,29 @@ async function loadLifeExpectencyAndAlcoholTop10()
         .domain([85, 72])
         .range(["white", "darkblue"])
 
-    const xAxisLabels = svg.append("g")
+    const xAxisLabels = svgContainer.append("g")
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(scaleX))
 
-    svg.append("g")
+    // Add actual x-axis labels (as in the actual label, not each indvidiual X/Y axis increment label)
+    // https://stackoverflow.com/a/11194968
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 70)
+        .text("Country Code")
+
+    svg.append("text")
+        .attr('text-anchor', 'end')
+        .attr("transform", "rotate(-90)")
+        .attr("x", -width / 4)
+        .attr("y", 28)
+        .text("Litres of alcohol consumed per capita")
+
+    svgContainer.append("g")
         .attr("transform", `translate(${margin}, 0)`)
         .call(d3.axisLeft(scaleY))
 
-    const joinedData = svg.selectAll("rect")
+    const joinedData = svgContainer.selectAll("rect")
         .data(data, (d) => d.id)
         .join("rect")
 
