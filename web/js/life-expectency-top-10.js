@@ -41,9 +41,8 @@ async function loadLifeExpectencyAndAlcoholTop10()
         }
     })
 
-    // let min = d3.min(data, (d) => d.alcohol_consumption)
-    const max = d3.max(data, (d) => d.alcohol_consumption)
-    const min = 0 // TODO - WHY THE FUCK DOES EVERYONE USE JAVASCRIPT THIS FUCKING THING DOESN'TW ROK I'M GOI NG TO CRY
+    const max = Math.ceil(d3.max(data, (d) => d.alcohol_consumption))
+    const min =  // TODO - WHY THE FUCK DOES EVERYONE USE JAVASCRIPT THIS FUCKING THING DOESN'TW ROK I'M GOI NG TO CRY
 
     let scaleX = d3.scaleBand()
         .domain(data.map(d => d.ref_area_code))
@@ -63,6 +62,14 @@ async function loadLifeExpectencyAndAlcoholTop10()
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(scaleX))
 
+    svgContainer.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(${margin}, 0)`)
+        .call(d3.axisLeft(scaleY)
+            .ticks(6)
+            .tickSize(-width, 0, 0)
+        )
+
     // Add actual x-axis labels (as in the actual label, not each indvidiual X/Y axis increment label)
     // https://stackoverflow.com/a/11194968
     svg.append("text")
@@ -74,23 +81,19 @@ async function loadLifeExpectencyAndAlcoholTop10()
         .attr('text-anchor', 'end')
         .attr("transform", "rotate(-90)")
         .attr("x", -width / 4)
-        .attr("y", 28)
+        .attr("y", 22)
         .text("Litres of alcohol consumed per capita")
 
-    svgContainer.append("g")
-        .attr("transform", `translate(${margin}, 0)`)
-        .call(d3.axisLeft(scaleY))
+    const tooltip = d3.select("#tooltip")
 
     const joinedData = svgContainer.selectAll("rect")
         .data(data, (d) => d.id)
         .join("rect")
 
-    const tooltip = d3.select("#tooltip")
-
     joinedData
         .attr("width", scaleX.bandwidth())
-        .attr("height", (d) => scaleY(max - d.alcohol_consumption))
-        .attr("y", (d) => height - scaleY(max - d.alcohol_consumption))
+        .attr("height", (d) => height - scaleY(d.alcohol_consumption))
+        .attr("y", (d) => scaleY(d.alcohol_consumption))
         .attr("x", (d) => scaleX(d.ref_area_code))
         .attr("fill", (d) => colourScale(d.life_expectency))
         .on("mouseover", (event, d) => {
@@ -146,8 +149,6 @@ async function loadLifeExpectencyAndAlcoholTop10()
             .transition()
             .duration(500)
             .attr("width", scaleX.bandwidth())
-            .attr("height", (d) => scaleY(max - d.alcohol_consumption))
-            .attr("y", (d) => height - scaleY(max - d.alcohol_consumption))
             .attr("x", (d) => scaleX(d.ref_area_code))
             .attr("fill", (d) => colourScale(d.life_expectency))
 
@@ -161,5 +162,5 @@ async function loadLifeExpectencyAndAlcoholTop10()
     orderByLEAscendingBtn.on("click", () => orderChart(2, 1))
     orderByLEDescendingBtn.on("click", () => orderChart(2, 2))
 
-    orderChart(1, 2)
+    // orderChart(1, 2)
 }
