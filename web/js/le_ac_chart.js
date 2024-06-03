@@ -9,7 +9,7 @@ async function loadLeAcChart()
 {
     const width = 1000;
     const height = 500;
-    const margin = 30;
+    const margin = 50;
 
     // Create the initial document, with headers and shit
     const section = d3.select("#life-expectency-and-alcohol-consumption");
@@ -251,6 +251,14 @@ async function loadLeAcChart()
         .style("stroke-width", "0.15rem")
         .attr("x1", margin)
         .attr("x2", width - margin)
+    const yAxisTooltipCircle_lifeExpectency = svg.append("circ")
+        .attr("r", 60)
+        .attr("stroke", "black")
+        .attr("fill", "gray")
+    const yAxisTooltipCircle_alcoholConsumption = svg.append("circ")
+        .attr("r", 50)
+        .attr("stroke", "black")
+        .attr("fill", "gray")
 
     svg.on("mouseover", () => {
         tooltip.style("visibility", "visible")
@@ -294,12 +302,24 @@ async function loadLeAcChart()
         // This makes it so we don't have to execute the same code every single frame the user moves their mouse
         if (currentlySelectedYear != year) {
             currentlySelectedYear = year
-            xAxisTooltip
-                .attr("transform", `translate(${xPos}, 0)`)
+
+            xAxisTooltip.attr("transform", `translate(${xPos}, 0)`)
+
             if (acSwitchEnabled)
+            { 
                 yAxisTooltip_alcoholConsumption.attr("transform", `translate(0, ${yPos1})`)
+
+                yAxisTooltipCircle_alcoholConsumption
+                    .attr("cx", xPos)
+                    .attr("cy", yPos1)
+            }
             if (leSwitchEnabled)
+            {
                 yAxisTooltip_lifeExpectency.attr("transform", `translate(0, ${yPos2})`)
+                yAxisTooltipCircle_lifeExpectency
+                    .attr("cx", xPos)
+                    .attr("cy", yPos2)
+            }
         }
     })
     svg.on("mouseout", () => {

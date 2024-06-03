@@ -1,7 +1,7 @@
-select
+SELECT
     reference_area.code,
     reference_area.name,
-    AVG(obs_value) as `obs_value`
+    AVG(obs_value)
 FROM
     alcohol_consumption
 INNER JOIN
