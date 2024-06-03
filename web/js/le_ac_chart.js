@@ -13,7 +13,11 @@ async function loadLeAcChart()
 
     // Create the initial document, with headers and shit
     const section = d3.select("#life-expectency-and-alcohol-consumption");
-    const sidebarDiv = section.append("div").attr("class", "scroll-bar")
+    section.append("h1").text("Alcohol consumption (litres per capita) and life expectency over time")
+    const chartSection = section.append("div").style("display", "flex")
+    
+    // Add legend, data selection, and countries list
+    const sidebarDiv = chartSection.append("div").attr("class", "scroll-bar")
 
     createLegend(sidebarDiv)
     const [leSwitch, acSwitch] = createDataSwitches(sidebarDiv)
@@ -24,7 +28,7 @@ async function loadLeAcChart()
     countriesSection.append("h1").text("Countries")
     const countriesRadioBtnList = countriesSection.append("div")
 
-    const svg = section.append("svg").attr("width", width).attr("height", height)
+    const svg = chartSection.append("svg").attr("width", width).attr("height", height)
 
     // Get the data
     index = 0;

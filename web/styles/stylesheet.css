@@ -3,9 +3,8 @@
 
 body {
     font-family: "Roboto", sans-serif;
-    max-width: 100rem;
-    margin: auto;
-    padding: 7rem;
+    padding-top: 5rem;
+    padding-left: 2rem;
 }
 
 body > h1 {
@@ -52,15 +51,11 @@ img {
     max-width: 100%;
 }
 
-#life-expectency-and-alcohol-consumption {
-    display: flex;
-}
-
 .scroll-bar {
     overflow-y: scroll;
 }
 
-#life-expectency-and-alcohol-consumption > div {
+#life-expectency-and-alcohol-consumption > div > div {
     /* Make the section move to left of SVG */
     max-height: 500px;
     width: 15rem;
