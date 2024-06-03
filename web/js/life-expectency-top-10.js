@@ -70,12 +70,31 @@ async function loadLifeExpectencyAndAlcoholTop10()
         .data(data, (d) => d.id)
         .join("rect")
 
+    const tooltip = d3.select("#tooltip")
+
     joinedData
         .attr("width", scaleX.bandwidth())
         .attr("height", (d) => scaleY(max - d.alcohol_consumption))
         .attr("y", (d) => height - scaleY(max - d.alcohol_consumption))
         .attr("x", (d) => scaleX(d.ref_area_code))
         .attr("fill", (d) => colourScale(d.life_expectency))
+        .on("mouseover", (event, d) => {
+            tooltip.style("visibility", "visible")
+            tooltip.html(`
+                    <p><strong>${d.ref_area_name}</strong></p>
+                    <hr>
+                    <p>Alcohol Consumption: ${d.alcohol_consumption}</p>
+                    <p>Life Expectancy: ${d.life_expectency}</p>
+                `)
+
+        })
+        .on("mousemove", (event, d) => {
+            tooltip.style("top", `${event.pageY - 40}px`)
+                .style("left", `${event.pageX + 40}px`)
+        })
+        .on("mouseout", () => {
+            tooltip.style("visibility", "hidden")
+        })
 
     /** 
      * Orders the chart either by [by=1]alcohol consumption, or [by=2]life expectency
@@ -127,5 +146,5 @@ async function loadLifeExpectencyAndAlcoholTop10()
     orderByLEAscendingBtn.on("click", () => orderChart(2, 1))
     orderByLEDescendingBtn.on("click", () => orderChart(2, 2))
 
-    orderChart(1, 1)
+    orderChart(1, 2)
 }
