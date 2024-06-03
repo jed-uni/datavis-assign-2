@@ -30,6 +30,20 @@ async function loadLeAcChart()
 
     const svg = chartSection.append("svg").attr("width", width).attr("height", height)
 
+    // Add actual x-axis labels (as in the actual label, not each indvidiual X/Y axis increment label)
+    // https://stackoverflow.com/a/11194968
+    svg.append("text")
+        .attr("x", width / 2.5)
+        .attr("y", height - 20)
+        .text("Year")
+
+    svg.append("text")
+        .attr('text-anchor', 'end')
+        .attr("transform", "rotate(-90)")
+        .attr("x", -width / 9) // Want to know why I divide by 9? Fuck you. Thats why. Fucking D3 being fucking awful fuck d3 to hell
+        .attr("y", 20)
+        .text("Litres of alcohol consumed per capita")
+
     // Get the data
     index = 0;
     const data = await d3.csv("../assets/le_and_ac.csv", (d) => {
