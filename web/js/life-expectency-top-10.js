@@ -42,7 +42,7 @@ async function loadLifeExpectencyAndAlcoholTop10()
     })
 
     const max = Math.ceil(d3.max(data, (d) => d.alcohol_consumption))
-    const min =  // TODO - WHY THE FUCK DOES EVERYONE USE JAVASCRIPT THIS FUCKING THING DOESN'TW ROK I'M GOI NG TO CRY
+    const min = 8 // TODO - WHY THE FUCK DOES EVERYONE USE JAVASCRIPT THIS FUCKING THING DOESN'TW ROK I'M GOI NG TO CRY
 
     let scaleX = d3.scaleBand()
         .domain(data.map(d => d.ref_area_code))

@@ -44,7 +44,7 @@ async function loadAverageAlcoholConsumptionChart()
     // Data and colour scale
     const colourScale = d3.scaleLinear()
         .domain([min, max])
-        .range(["#f8d4f9", "purple"])
+        .range(["#f9e3ae", "darkred"])
 
     // Creating legend on top left of map
     const legendGradientDef = svg.append("defs")
