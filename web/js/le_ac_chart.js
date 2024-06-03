@@ -44,6 +44,13 @@ async function loadLeAcChart()
         .attr("y", 20)
         .text("Litres of alcohol consumed per capita")
 
+    svg.append("text")
+        .attr('text-anchor', 'start')
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 1.333) // Want to know why I divide by 9? Fuck you. Thats why. Fucking D3 being fucking awful fuck d3 to hell
+        .attr("y", width - 115)
+        .text("Litres of alcohol consumed per capita")
+
     // Get the data
     index = 0;
     const data = await d3.csv("../assets/le_and_ac.csv", (d) => {
@@ -64,7 +71,6 @@ async function loadLeAcChart()
     // between them, and use that formula to extraplotae the correct values. However, if there are some
     // values missing IN BETWEEN the dataset, I.e, 2012 = 76, 2013 = 77, 2014 = null, 2015 = 77, we just
     // simply linearly interploate between them.
-
 
     // Group the data and automatically select "AUS" for first selection
     const groupedData = d3.group(data, (d) => d.refAreaCode)
