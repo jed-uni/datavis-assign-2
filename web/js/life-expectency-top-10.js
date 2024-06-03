@@ -9,11 +9,16 @@ async function loadLifeExpectencyAndAlcoholTop10()
     segment.insert("h1").text("Life expectency for the top 10 alcohol consumers in 2019")
 
     const btnGroup = segment.insert("div")
-    const orderByACBtn = btnGroup.insert("button")
-        .text("Order by alcohol consumption")
-    const orderByLEBtn = btnGroup.insert("button")
-        .text("Order by life expectency")
+    const alcoholConsumptionBtns = segment.insert("div").attr("class", "btn-group")
+    alcoholConsumptionBtns.append("p").text("Order by alcohol consumption")
+    const lifeExpectancyBtns = segment.insert("div").attr("class", "btn-group")
+    lifeExpectancyBtns.append("p").text("Order by life expectancy")
 
+    const orderByACAscendingBtn = alcoholConsumptionBtns.insert("button").text("Ascending")
+    const orderByACDescendingBtn = alcoholConsumptionBtns.insert("button").text("Descending")
+
+    const orderByLEAscendingBtn = lifeExpectancyBtns.insert("button").text("Ascending")
+    const orderByLEDescendingBtn = lifeExpectancyBtns.insert("button").text("Descending")
 
     // append the svg object to the body of the page
     const svg = d3.select("#life-expectency-top-10-alcohol")
@@ -74,26 +79,37 @@ async function loadLifeExpectencyAndAlcoholTop10()
 
     /** 
      * Orders the chart either by [by=1]alcohol consumption, or [by=2]life expectency
+     * @param {Number} by The variable to sort by, 1 === alcohol_consumiton, and 2 === life_expectency
+     * @param {Number} asc Which direction to sort the dataset by, 1 === ascending, 2 === descending
      */
-    function orderChart(by) {
+    function orderChart(by, asc) {
         let orderByValue;
 
         if (by === 1) {
             orderByValue = 'alcohol_consumption';
         } else if (by === 2) {
             orderByValue = 'life_expectency';
+        } else {
+            throw new Error(`You cannot order the chart by '${by}', you can only sort by 1 (alcohol consumption) or 2 (life expectancy)`)
+        }
+
+        let orderedData = [...data]
+        if (asc === 1) {
+            orderedData = data.sort((x, y) => d3.ascending(x[orderByValue], y[orderByValue]))
+        } else if (asc === 2) {
+            orderedData = data.sort((x, y) => d3.descending(x[orderByValue], y[orderByValue]))
+        } else {
+            throw new Error(`You can only choose to order the chart by 1 (ascending), or 2 (descending)`)
         }
 
         // i really need to sleep 
-        const orderedData = [...data]
-            .sort((x, y) => d3.descending(x[orderByValue], y[orderByValue]))
-
         const joinedData = svg.selectAll("rect")
             .data(orderedData, (d) => d.id);
 
         scaleX.domain(orderedData.map(d => d.ref_area_code))
 
-        joinedData.transition()
+        joinedData
+            .transition()
             .duration(500)
             .attr("width", scaleX.bandwidth())
             .attr("height", (d) => scaleY(max - d.alcohol_consumption))
@@ -104,9 +120,12 @@ async function loadLifeExpectencyAndAlcoholTop10()
         xAxisLabels.transition()
             .duration(500)
             .call(d3.axisBottom(scaleX))
-
     }
 
-    orderByACBtn.on("click", () => orderChart(1))
-    orderByLEBtn.on("click", () => orderChart(2))
+    orderByACAscendingBtn.on("click", () => orderChart(1, 1))
+    orderByACDescendingBtn.on("click", () => orderChart(1, 2))
+    orderByLEAscendingBtn.on("click", () => orderChart(2, 1))
+    orderByLEDescendingBtn.on("click", () => orderChart(2, 2))
+
+    orderChart(1, 1)
 }
