@@ -40,9 +40,9 @@ async function loadLeAcChart()
     svg.append("text")
         .attr('text-anchor', 'end')
         .attr("transform", "rotate(-90)")
-        .attr("x", -width / 9) // Want to know why I divide by 9? Fuck you. Thats why. Fucking D3 being fucking awful fuck d3 to hell
+        .attr("x", -width / 5.5) // Want to know why I divide by 9? Fuck you. Thats why. Fucking D3 being fucking awful fuck d3 to hell
         .attr("y", 20)
-        .text("Litres of alcohol consumed per person")
+        .text("Life Expectancy")
 
     svg.append("text")
         .attr('text-anchor', 'start')
