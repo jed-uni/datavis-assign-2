@@ -55,7 +55,7 @@ async function loadLifeExpectencyAndAlcoholTop10()
 
     // Values directly from the database
     const colourScale = d3.scaleLinear()
-        .domain([85, 72])
+        .domain([72, 85])
         .range(["white", "darkblue"])
 
     const xAxisLabels = svgContainer.append("g")
@@ -81,11 +81,11 @@ async function loadLifeExpectencyAndAlcoholTop10()
 
     legendGradient.append("stop")
         .attr("offset", "0%")
-        .attr("stop-color", colourScale(85))
+        .attr("stop-color", colourScale(72))
 
     legendGradient.append("stop")
         .attr("offset", "100%")
-        .attr("stop-color", colourScale(72))
+        .attr("stop-color", colourScale(85))
 
     const legend = svg.append("g")
         .attr("transform", `translate(${width + margin.right}, 10)`)
