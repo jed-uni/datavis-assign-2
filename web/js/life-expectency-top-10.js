@@ -117,7 +117,7 @@ async function loadLifeExpectencyAndAlcoholTop10()
         .attr("transform", "rotate(-90)")
         .attr("x", -width / 4)
         .attr("y", 22)
-        .text("Litres of alcohol consumed per capita")
+        .text("Litres of alcohol consumed per person")
 
     const tooltip = d3.select("#tooltip")
 
@@ -136,7 +136,7 @@ async function loadLifeExpectencyAndAlcoholTop10()
             tooltip.html(`
                     <p><strong>${d.ref_area_name}</strong></p>
                     <hr>
-                    <p>Alcohol Consumption: ${d.alcohol_consumption}</p>
+                    <p>Litres of Alcohol Consumed Per Person: ${d.alcohol_consumption}</p>
                     <p>Life Expectancy: ${d.life_expectency}</p>
                 `)
 

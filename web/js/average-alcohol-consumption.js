@@ -5,7 +5,7 @@ async function loadAverageAlcoholConsumptionChart()
     
     const section = d3.select("#avg-alcohol-consumption")
     section.append("h1").text("Average alcohol consumption in the world")
-    section.append("p").html("Alcohol consumption of everyone aged above 15 years old, measured in <em>litres per capita</em>. Hover over map for exact value.")
+    section.append("p").html("Alcohol consumption of everyone aged above 15 years old, measured in <em>litres per person</em>. Hover over map for exact value.")
 
     const svg = section.append("svg")
         .attr("class", "map")
@@ -154,9 +154,9 @@ function getMapColour(dataset, d, scale) {
 function updateTooltip(tooltip, dataset, selectedPoint) {
     let html;
     if(selectedPoint.id in dataset)
-        html = `<p><strong>${selectedPoint.id}</strong></p><hr><p>Alcohol Consumption: ${dataset[selectedPoint.id].toFixed(3)}</p>`;
+        html = `<p><strong>${selectedPoint.id}</strong></p><hr><p>Litres of alcohol per person: ${dataset[selectedPoint.id].toFixed(3)}</p>`;
     else 
-        html = `<p><strong>${selectedPoint.id}</strong></p><hr><p>Alcohol Consumption: No Data</p>`;
+        html = `<p><strong>${selectedPoint.id}</strong></p><hr><p>Litres of alcohol per person: No Data</p>`;
             
     tooltip.style("visibility", "visible").html(html)
 }

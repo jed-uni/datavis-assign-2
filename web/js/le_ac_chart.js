@@ -13,7 +13,7 @@ async function loadLeAcChart()
 
     // Create the initial document, with headers and shit
     const section = d3.select("#life-expectency-and-alcohol-consumption");
-    section.append("h1").text("Alcohol consumption (litres per capita) and life expectency over time")
+    section.append("h1").text("Alcohol consumption (litres per person) and life expectency over time")
     const chartSection = section.append("div").style("display", "flex")
     
     // Add legend, data selection, and countries list
@@ -42,14 +42,14 @@ async function loadLeAcChart()
         .attr("transform", "rotate(-90)")
         .attr("x", -width / 9) // Want to know why I divide by 9? Fuck you. Thats why. Fucking D3 being fucking awful fuck d3 to hell
         .attr("y", 20)
-        .text("Litres of alcohol consumed per capita")
+        .text("Litres of alcohol consumed per person")
 
     svg.append("text")
         .attr('text-anchor', 'start')
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 1.333) // Want to know why I divide by 9? Fuck you. Thats why. Fucking D3 being fucking awful fuck d3 to hell
         .attr("y", width - 115)
-        .text("Litres of alcohol consumed per capita")
+        .text("Litres of alcohol consumed per person")
 
     // Get the data
     index = 0;
@@ -308,8 +308,8 @@ async function loadLeAcChart()
         const leFixed = dataPoint.lifeExpectency.toFixed(2)
 
         const alcoholConsumptionHtml = dataPoint.acIsEstimated 
-            ? `<s>Alcohol Consumption: ~${acFixed}</s>`
-            : `Alcohol Consumption: ${leFixed}`
+            ? `<s>Litres of Alcohol Consumed Per Person: ~${acFixed}</s>`
+            : `Litres of Alcohol Consumed Per Person: ${acFixed}`
 
         const lifeExpectencyHtml = dataPoint.leIsEstimated 
             ? `<s>Life Expectency: ~${leFixed}</s>`
@@ -491,7 +491,7 @@ function calculateSlopeOfDataset(data, func) {
 function createLegend(parent) {
     const legendSection = parent.append("section")
     legendSection.append("h1").text("Legend")
-    legendSection.append("p").text("Red - Alcohol Consumption").style("color", "red")
+    legendSection.append("p").text("Red - Litres of alcohol consumed per person").style("color", "red")
     legendSection.append("p").text("Blue - Life Expectency").style("color", "blue")
     legendSection.append("p").html("<p><s>Strike</s> - Extrapolated Data</p>")
 }

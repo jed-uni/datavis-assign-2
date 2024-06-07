@@ -11,7 +11,6 @@ body > h1 {
     text-align: center;
 }
 
-
 /* Makes all divs inside align from left to right */
 .organised-list {
     display: flex;
@@ -70,20 +69,7 @@ img {
     border-radius: 1rem;
 }
 
-/*
-.grid line{
-  stroke: rgba(0, 0, 0, 0.2);
-}
-
-.grid path{
-  stroke: rgba(0, 0, 0, 0.2);
-}
-*/
-
 .tick line {
     stroke: rgba(0, 0, 0, 0.4)
 }
 
-/* .grid text{
-  fill: rgba(0, 0, 0, 0.2);
-} */
